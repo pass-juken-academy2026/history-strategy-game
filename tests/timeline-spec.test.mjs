@@ -57,7 +57,7 @@ test("camera, drag placement, resize, and save slots have regression coverage", 
 
 test("the 3D prototype discloses its online and network-dependent limitations", () => {
   assert.ok(html.includes("オンライン対戦・フレンド招待・サーバー同期は未実装です"));
-  assert.ok(html.includes("Three.js") && html.includes("ネット接続が必要です"));
+  assert.ok(html.includes("3Dライブラリはサイトに同梱されています"));
   assert.ok(html.includes("アカウント登録・ログイン・個人情報入力は不要"));
 });
 
@@ -124,4 +124,11 @@ test("hard CPU adapts protection choices to victory rules and avoids same-era re
   assert.ok(html.includes("if(victoryRule==='stability')score="), "hard CPU should account for the stability victory rule");
   assert.ok(html.includes("else if(victoryRule==='preserve')score="), "hard CPU should account for the preservation threshold");
   assert.ok(html.includes("disruptionCount>0?1:0"), "hard CPU should respond to player disruption");
+});
+
+
+test("offline messaging matches the locally bundled Three.js implementation", () => {
+  assert.ok(html.includes("3Dライブラリはサイトに同梱されています"), "settings should disclose bundled local 3D assets");
+  assert.ok(html.includes("オンラインで一度開いてキャッシュされた状態で確認してください"), "offline claims should be qualified by cache availability");
+  assert.ok(!html.includes("Three.jsの読み込みにはネット接続が必要です"), "obsolete CDN-dependent notice should be removed");
 });
