@@ -34,6 +34,8 @@ test("manifest and version metadata are valid", async () => {
   const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
   assert.equal(manifest.lang, "ja");
   assert.match(version.version, /^\d+\.\d+\.\d+$/);
+  assert.equal(packageJson.version, version.version, "package and deployed app versions should match");
+  assert.ok(html.includes("const APP_VERSION=\'" + version.version + "\'"), "runtime app version should match version.json");
 });
 
 
