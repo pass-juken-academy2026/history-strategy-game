@@ -242,7 +242,7 @@ test("god-view mode uses real-time 3D and preserves the two distinct mode rules"
   assert.ok(timeline.includes("history:advance"), "era advancement must update the 3D scene");
   assert.ok(timeline.includes("mode==='branch'?disruptBlocks:disruptBlocks.concat(restoreBlocks)"), "branch mode must expose disruption blocks only");
   assert.ok(timeline.includes("オンライン対戦・フレンド招待・サーバー同期は未実装です"), "prototype must disclose missing online services");
-  assert.ok(timeline.includes('id="networkNotice"') && timeline.includes("navigator.onLine") && timeline.includes("オフラインです。3D表示には外部ライブラリの読み込みが必要"), "3D timeline must explain how to recover when offline");
+  assert.ok(timeline.includes('id="networkNotice"') && timeline.includes("navigator.onLine") && timeline.includes("オフラインです。3Dライブラリは同梱されています"), "3D timeline must explain how to recover when offline");
   assert.ok(timeline.includes('e.target.type==="module"') && timeline.includes("3Dライブラリを読み込めませんでした"), "3D module load failures must be explained");
   assert.ok(timeline.includes("カエサル") && timeline.includes("紫式部") && timeline.includes("ナポレオン"), "historical figures/events should be represented");
   assert.ok(!/innerHTML\\s*=/.test(timeline), "dynamic labels should not use innerHTML");
