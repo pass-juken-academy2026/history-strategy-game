@@ -44,7 +44,7 @@ jobs:
           node --check dist/vendor/three.module.js
           node --check dist/vendor/addons/controls/OrbitControls.js
       - name: Upload tested website bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: tested-site-bundle
           path: dist
