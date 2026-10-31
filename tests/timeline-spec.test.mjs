@@ -28,6 +28,8 @@ test("branch endings and selectable local victory rules are implemented without 
   assert.ok(html.includes("value=\"stability\""));
   assert.ok(html.includes("value=\"blocks\""));
   assert.ok(html.includes("value=\"preserve\""));
+  assert.ok(html.includes("史実保護 — 最終時代で安定度70以上を目指す"), "label must match the implemented threshold");
+  assert.ok(html.includes("victoryRule===\'preserve\')winner=stability>=70"), "preservation rule must use threshold 70");
   assert.ok(html.includes("function finishTimeline()"));
   assert.ok(html.includes("歴史の連続性エンド"));
   assert.ok(html.includes("大分岐エンド"));
