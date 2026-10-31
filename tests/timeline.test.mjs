@@ -39,6 +39,7 @@ test("branch and versus modes remain distinct", () => {
   assert.match(html, /const disruptBlocks\s*=/);
   assert.match(html, /const restoreBlocks\s*=/);
   assert.match(html, /function activeBlocks\(\)\{return disruptBlocks\}/, "the human player must stay on the disruptor side; history-preservation blocks belong to the CPU");
+  assert.match(html, /if\(!disruptBlocks\.some\(b=>b\.id===selected\)\)selected='delay'/, "switching modes or loading old saves must not leave a non-player block selected");
 });
 
 test("save data includes game state and block transforms", () => {
