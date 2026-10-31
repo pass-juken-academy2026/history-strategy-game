@@ -73,7 +73,7 @@ test("the page clearly identifies online multiplayer as not implemented", () => 
 
 test("3D click placement is handled by click events while pointerup only finalizes dragging", () => {
   assert.match(html, /addEventListener\('click',e=>\{if\(!lastPointerWasDrag\)pickObject\(e\);lastPointerWasDrag=false\}\)/);
-  assert.match(html, /addEventListener\('pointerup',e=>\{const isClick=Boolean\(downPoint/);
+  assert.match(html, /addEventListener\('pointerup',e=>\{lastPointerWasDrag=pointerMoved/);
 });
 
 test("3D clicks prioritize the nearest object so background era markers cannot steal block placement", () => {
