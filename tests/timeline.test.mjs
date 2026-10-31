@@ -40,7 +40,7 @@ test("save data includes game state and block transforms", () => {
   assert.match(html, /function persistSave\(\)/);
   assert.match(html, /localStorage\.setItem\(slotKey\(activeSlot\),JSON\.stringify\(data\)\)/);
   assert.match(html, /blockTransforms:blockMeshes\.map/);
-  assert.match(html, /function restoreSave\(data\)/);
+  assert.match(html, /function restoreSave\(\)/);
 });
 
 test("quality settings and end-of-timeline result handling exist", () => {
