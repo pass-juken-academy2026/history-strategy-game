@@ -31,6 +31,7 @@
 .chosen-region{text-align:center;color:#f2d38e;font-weight:700;margin:12px 0}
 .start-actions{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:12px}
 .start-button{min-width:min(320px,90%);padding:15px 26px;border-radius:999px;font-size:20px;letter-spacing:.08em;box-shadow:0 8px 24px #b8873640}
+.timeline-link{display:inline-block;text-decoration:none;text-align:center}
 .start-resume{background:transparent;border-color:#415b76;color:#d8e5f3}
 @media(max-width:600px){.start-screen{padding:18px 10px 26px}.earth-stage{width:min(78vw,300px);margin-bottom:14px}.region-picker{padding:12px}.region-list{grid-template-columns:repeat(2,minmax(0,1fr));max-height:310px;gap:7px}.campaign-region{padding:8px;min-height:54px}.campaign-region strong{font-size:13px}}
 
@@ -128,7 +129,8 @@
    <div id="campaignRegions" class="region-list" aria-label="開始地域一覧"></div>
    <div id="chosenRegionLabel" class="chosen-region" aria-live="polite">選択中：東アジア</div>
    <div class="start-actions">
-    <button id="beginCampaign" class="primary start-button">始める</button>
+    <button id="beginCampaign" class="primary start-button">従来の戦略モードを始める</button>
+    <a class="primary start-button timeline-link" href="./timeline.html">🌌 神の視点・歴史コースへ</a>
     <button id="resumeCampaign" class="start-resume">保存データから再開</button>
    </div>
   </div>
