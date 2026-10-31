@@ -71,6 +71,18 @@ test("the page clearly identifies online multiplayer as not implemented", () => 
   assert.match(html, /ローカルの試作対戦で、オンライン対戦ではありません/);
 });
 
+test("the opening timeline is organized by individual Chinese dynasties", () => {
+  for (const dynasty of ["name:'秦'", "name:'漢'", "name:'唐'", "name:'明'", "name:'清'"]) {
+    assert.ok(html.includes(dynasty), `missing dynasty stage ${dynasty}`);
+  }
+  assert.doesNotMatch(html, /name:'古代'|name:'中世'|name:'近世'|name:'近代'|name:'現代'/);
+});
+
+test("event label is positioned below the mode switch on short screens", () => {
+  assert.match(html, /\.mode-switch\{top:128px\}[\s\S]*?\.center-label\{top:clamp\(160px,22vh,240px\)\}/);
+  assert.match(html, /\.center-label\{position:absolute;top:clamp\(160px,22vh,240px\)/);
+});
+
 test("3D scene initialization calls the implemented landmark builder", () => {
   assert.match(html, /function landmarks\(\)/);
   assert.match(html, /makeEarth\(\);makeTimeline\(\);landmarks\(\);animate\(\)/);
