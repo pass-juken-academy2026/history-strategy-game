@@ -208,7 +208,7 @@ test("legacy six-region saves migrate and corrupted primary saves recover from b
   };
   const setup = html.slice(campaignStart, campaignEnd);
   const loaders = html.slice(loaderStart, loaderEnd);
-  vm.runInNewContext(setup + "\n" + loaders + "\nglobalThis.__loadSavedGame=loadSavedGame;", sandbox);
+  vm.runInNewContext(setup + "\n" + loaders + "\nglobalThis.__loadSavedGame=loadSavedGame;globalThis.__loadSavedGameData=loadSavedGameData;", sandbox);
   const legacy = {
     g: {
       campaignRegion: "北アメリカ", turn: 2, year: 1905, stability: 70,
