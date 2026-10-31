@@ -19,13 +19,19 @@ self.addEventListener("install", event => {
     const cache = await caches.open(CACHE_NAME);
     // Do not activate a worker that silently failed to cache required offline assets.
     // Keeping the previous worker active is safer than advertising a broken app shell.
-    await Promise.all(APP_SHELL.map(async path => {
-      const response = await fetch(new Request(path, { cache: "reload" }));
-      if (!isSafeToCache(response)) {
-        throw new Error(`Required offline asset could not be cached: ${path}`);
-      }
-      await cache.put(path, response);
-    }));
+    try {
+      await Promise.all(APP_SHELL.map(async path => {
+        const response = await fetch(new Request(path, { cache: "reload" }));
+        if (!isSafeToCache(response)) {
+          throw new Error(`Required offline asset could not be cached: ${path}`);
+        }
+        await cache.put(path, response);
+      }));
+    } catch (error) {
+      // Remove a partial cache from this failed install; the previous worker/cache stays untouched.
+      await caches.delete(CACHE_NAME);
+      throw error;
+    }
     await self.skipWaiting();
   })());
 });
