@@ -34,12 +34,52 @@
 .start-resume{background:transparent;border-color:#415b76;color:#d8e5f3}
 @media(max-width:600px){.start-screen{padding:18px 10px 26px}.earth-stage{width:min(78vw,300px);margin-bottom:14px}.region-picker{padding:12px}.region-list{grid-template-columns:repeat(2,minmax(0,1fr));max-height:310px;gap:7px}.campaign-region{padding:8px;min-height:54px}.campaign-region strong{font-size:13px}}
 
+
+/* Top-right multiplayer and friends menu */
+.start-inner{position:relative;padding-top:56px}
+.start-topbar{position:absolute;top:0;right:0;z-index:5;display:flex;gap:8px;align-items:center}
+.start-topbar button{background:#12243a;border-color:#49627e;color:#edf6ff;font-size:13px;padding:9px 12px}
+.start-topbar .menu-primary{border-color:#b88c45;color:#f6d58f}
+.social-popover{position:absolute;top:45px;right:0;width:min(320px,calc(100vw - 28px));padding:13px;background:#0d1b2c;border:1px solid #3b5571;border-radius:14px;box-shadow:0 18px 45px #0009;z-index:10}
+.social-popover h3{font-size:15px;margin:0 0 8px;color:#f4d28a}
+.social-popover p{font-size:12px;color:#b7c9dd;margin:5px 0 10px}
+.social-options{display:grid;gap:7px}
+.social-options button{text-align:left;background:#172b42;border-color:#3a536f;padding:10px}
+.social-options button[aria-pressed="true"]{border-color:#e8bd67;box-shadow:inset 0 0 0 1px #e8bd67}
+.social-options button:disabled{opacity:.6;cursor:not-allowed}
+.social-popover .close-menu{display:block;margin:9px 0 0 auto;background:transparent}
+.friend-status{padding:10px;border-radius:9px;background:#13243a;border:1px solid #304b68;color:#b9cde0;font-size:12px}
+@media(max-width:600px){.start-inner{padding-top:54px}.start-topbar{left:0;right:0;justify-content:flex-end;gap:6px}.start-topbar button{padding:8px 10px;font-size:12px}.start-title h1{font-size:clamp(25px,7vw,34px)}}
+
 @media(max-width:760px){.wrap{padding:13px}.setup{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,1fr)}.layout{grid-template-columns:1fr}.map{gap:6px}.region{padding:8px;min-height:100px}.rules{grid-template-columns:1fr}.brand{font-size:24px}}
 </style>
 </head>
 <body>
 <section id="startScreen" class="start-screen" aria-label="キャンペーン開始">
  <div class="start-inner">
+  <nav class="start-topbar" aria-label="対戦とフレンド">
+   <button id="battleMenuButton" class="menu-primary" aria-expanded="false" aria-controls="battleMenu">⚔️ 対戦 ▾</button>
+   <button id="friendsMenuButton" aria-expanded="false" aria-controls="friendsMenu">👥 フレンド</button>
+   <section id="battleMenu" class="social-popover hidden" aria-label="対戦モード">
+    <h3>対戦モードを選択</h3>
+    <div class="social-options">
+     <button type="button" data-mode="cpu" aria-pressed="true">🤖 CPUと対戦<small> · 難易度を選べます</small></button>
+     <button type="button" data-mode="local" aria-pressed="false">🧑‍🤝‍🧑 同じ端末で2人対戦</button>
+     <button type="button" disabled>🌐 オンライン対戦（準備中）</button>
+    </div>
+    <p>オンライン対戦はサーバー・マッチング機能がまだ未実装です。</p>
+    <button type="button" class="close-menu" data-close-menu>閉じる</button>
+   </section>
+   <section id="friendsMenu" class="social-popover hidden" aria-label="フレンド">
+    <h3>フレンド</h3>
+    <div class="friend-status">オンラインのフレンド一覧・フレンド追加・招待は、サーバー連携が未実装のためまだ利用できません。</div>
+    <div class="social-options" style="margin-top:8px">
+     <button type="button" disabled>＋ フレンドを追加（準備中）</button>
+     <button type="button" disabled>✉️ 対戦に招待（準備中）</button>
+    </div>
+    <button type="button" class="close-menu" data-close-menu>閉じる</button>
+   </section>
+  </nav>
   <header class="start-title">
    <div class="eyebrow">A WORLD OF ALTERNATE HISTORY</div>
    <h1>歴史戦略 — 分岐する年代記</h1>
@@ -213,6 +253,12 @@ function renderCampaignRegions(){
 $('beginCampaign').onclick=()=>{if(!chosenCampaignRegion)return;$('startScreen').classList.add('hidden');$('gameApp').classList.remove('hidden');start()};
 $('resumeCampaign').onclick=()=>{if(loadSavedGame()){$('startScreen').classList.add('hidden');$('gameApp').classList.remove('hidden');render()}else alert('保存データが見つからないか、読み込めませんでした。まず「始める」から新しいゲームを開始してください。')};
 renderCampaignRegions();
+const battleMenu=$('battleMenu'),friendsMenu=$('friendsMenu');
+function closeSocialMenus(){$('battleMenuButton').setAttribute('aria-expanded','false');$('friendsMenuButton').setAttribute('aria-expanded','false');battleMenu.classList.add('hidden');friendsMenu.classList.add('hidden')}
+$('battleMenuButton').onclick=()=>{const open=battleMenu.classList.contains('hidden');closeSocialMenus();if(open){battleMenu.classList.remove('hidden');$('battleMenuButton').setAttribute('aria-expanded','true')}};
+$('friendsMenuButton').onclick=()=>{const open=friendsMenu.classList.contains('hidden');closeSocialMenus();if(open){friendsMenu.classList.remove('hidden');$('friendsMenuButton').setAttribute('aria-expanded','true')}};
+document.querySelectorAll('[data-close-menu]').forEach(b=>b.onclick=closeSocialMenus);
+document.querySelectorAll('#battleMenu [data-mode]').forEach(b=>b.onclick=()=>{const mode=b.dataset.mode;$('mode').value=mode;document.querySelectorAll('#battleMenu [data-mode]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));$('battleMenuButton').textContent=mode==='cpu'?'⚔️ 対戦：CPU ▾':'⚔️ 対戦：2人 ▾';closeSocialMenus()});
 $('startScreen').classList.remove('hidden');
 $('gameApp').classList.add('hidden');
 const APP_VERSION='1.1.0';
