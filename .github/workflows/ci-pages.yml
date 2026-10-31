@@ -30,6 +30,13 @@ jobs:
         run: node --test tests/*.test.mjs
       - name: Prepare minimal website bundle
         run: node scripts/prepare-site.mjs && test -f dist/index.html
+      - name: Upload tested website bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: tested-site-bundle
+          path: dist
+          if-no-files-found: error
+          retention-days: 1
       - name: Verify Android web asset preparation
         run: node scripts/prepare-android.mjs && test -f www/index.html
 
@@ -47,6 +54,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Download tested website bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: tested-site-bundle
+          path: dist
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload site
