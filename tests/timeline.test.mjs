@@ -68,3 +68,7 @@ test("the page clearly identifies online multiplayer as not implemented", () => 
   assert.match(html, /オンライン対戦・フレンド招待・サーバー同期は未実装です/);
   assert.match(html, /ローカルの試作対戦で、オンライン対戦ではありません/);
 });
+
+test("loading a save reapplies the saved graphics quality to the renderer", () => {
+  assert.match(html, /function loadSlot\(\)\{[\s\S]*?restoreSave\(\);applyQuality\(\);rebuildPlacedBlocks\(\)/);
+});
