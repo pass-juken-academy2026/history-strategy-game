@@ -54,12 +54,20 @@ try {
   assert.equal(await page.locator("#tools [data-kind='restore']").count(), 0, "human player must only see disruption blocks in versus mode");
   await page.locator("#tools [data-kind='disrupt']").first().click();
 
+  await page.evaluate(() => {
+    window.__canvasPointerEvents = [];
+    const target = document.querySelector("#world3d canvas");
+    for (const name of ["pointerdown", "pointerup"]) {
+      target.addEventListener(name, () => window.__canvasPointerEvents.push(name), true);
+    }
+  });
+
   const canvas = page.locator("#world3d canvas");
   const bounds = await canvas.boundingBox();
   assert.ok(bounds, "3D canvas should have a browser viewport box");
   await page.mouse.click(bounds.x + bounds.width * 0.5, bounds.y + bounds.height * 0.48);
   await page.waitForTimeout(80);
-  const canvasInput = await page.evaluate(() => window.__canvasPointerEvents.some(e => e.name === "pointerdown") && window.__canvasPointerEvents.some(e => e.name === "pointerup"));
+  const canvasInput = await page.evaluate(() => window.__canvasPointerEvents.includes("pointerdown") && window.__canvasPointerEvents.includes("pointerup"));
   assert.ok(canvasInput, "browser mouse input should reach the 3D canvas");
 
   await page.locator("#placeSelectedButton").click();
