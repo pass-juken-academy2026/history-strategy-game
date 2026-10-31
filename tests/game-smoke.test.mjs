@@ -154,3 +154,30 @@ test("territory victory requires a majority of all regions, not a fixed small co
   assert.ok(html.includes("ownedCount('disrupt')>=territoryTarget"));
   assert.ok(html.includes("ownedCount('restore')>=territoryTarget"));
 });
+
+test("territory victory logic waits for a true majority of the 27-region map", () => {
+  const start = html.indexOf("function checkEnd(){");
+  const end = html.indexOf("\nfunction finish(", start);
+  assert.ok(start >= 0 && end > start, "checkEnd function should exist");
+  const source = html.slice(start, end);
+  let winner = null;
+  const sandbox = {
+    g: {
+      stability: 70, score: {disrupt: 0, restore: 0}, goal: "territory", turn: 1,
+      regions: Array.from({length: 27}, (_, id) => ({id, owner: id < 9 ? "disrupt" : id < 18 ? "restore" : "neutral"}))
+    },
+    ownedCount(side) { return this.g.regions.filter(r => r.owner === side).length; },
+    finish(side) { winner = side; }
+  };
+  vm.runInNewContext(source, sandbox);
+  sandbox.checkEnd();
+  assert.equal(winner, null, "nine starting regions must not trigger a majority victory");
+  sandbox.g.regions.slice(0, 5).forEach(r => { r.owner = "disrupt"; });
+  sandbox.checkEnd();
+  assert.equal(winner, "disrupt", "fourteen controlled regions should win");
+  winner = null;
+  sandbox.g.regions.forEach(r => { r.owner = "neutral"; });
+  sandbox.g.regions.slice(0, 14).forEach(r => { r.owner = "restore"; });
+  sandbox.checkEnd();
+  assert.equal(winner, "restore", "the opposing faction should also be able to win by majority");
+});
