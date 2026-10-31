@@ -132,3 +132,10 @@ test("service worker only caches known static assets and avoids private/no-store
   assert.ok(serviceWorker.includes('response.headers.has("Set-Cookie")'));
   assert.ok(serviceWorker.includes("Unknown same-origin URLs are fetched but never stored"));
 });
+
+
+test("random technology events never exceed development level five", () => {
+  assert.ok(html.includes("const candidates=g.regions.filter(r=>r.dev<5)"), "events should only choose regions below the cap");
+  assert.ok(html.includes("r.dev=Math.min(5,r.dev+1)"), "event development should be capped at level five");
+  assert.ok(html.includes("全地域が開発上限に達したため"), "event should have a fallback when every region is capped");
+});
