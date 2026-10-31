@@ -44,7 +44,7 @@ test("branch and versus modes remain distinct", () => {
 
 test("save data includes game state and block transforms", () => {
   assert.match(html, /function persistSave\(\)/);
-  assert.match(html, /localStorage\.setItem\(slotKey\(activeSlot\),JSON\.stringify\(data\)\)/);
+  assert.match(html, /localStorage\.setItem\(targetKey,JSON\.stringify\(data\)\)/);
   assert.ok(html.includes("blockTransforms:blockMeshes.map"), "block transforms must be saved");
   assert.match(html, /function restoreSave\(\)/);
 });
@@ -86,7 +86,15 @@ test("3D clicks prioritize the nearest object so background era markers cannot s
 });
 
 test("loading a save reapplies the saved graphics quality to the renderer", () => {
-  assert.match(html, /function loadSlot\(\)\{[\s\S]*?restoreSave\(\);applyQuality\(\);rebuildPlacedBlocks\(\)/);
+  assert.match(html, /function loadSlot\(\)\{[\s\S]*?restoreSave\(slotKey\(slot\)\);applyQuality\(\);rebuildPlacedBlocks\(\)/);
+});
+
+test("manual save slots remain independent from continuous autosave", () => {
+  assert.match(html, /const AUTOSAVE_KEY=SAVE_KEY\+"-autosave"/);
+  assert.match(html, /function persistSave\(targetKey=AUTOSAVE_KEY\)/);
+  assert.match(html, /activeSlot=slot;persistSave\(slotKey\(slot\)\)/);
+  assert.match(html, /function restoreSave\(key=AUTOSAVE_KEY\)/);
+  assert.match(html, /if\(!raw&&key===AUTOSAVE_KEY\)raw=localStorage\.getItem\(slotKey\(activeSlot\)\)/);
 });
 
 test("loading an empty save slot does not reset the current game", () => {
