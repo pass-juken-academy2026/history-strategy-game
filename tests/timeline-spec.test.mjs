@@ -60,3 +60,13 @@ test("the 3D prototype discloses its online and network-dependent limitations", 
   assert.ok(html.includes("Three.js") && html.includes("ネット接続が必要です"));
   assert.ok(html.includes("アカウント登録・ログイン・個人情報入力は不要"));
 });
+
+test("selected 3D blocks can be resized with touch-friendly on-screen controls", () => {
+  assert.ok(html.includes('id="blockSizeControls"'));
+  assert.ok(html.includes('id="shrinkBlock"'));
+  assert.ok(html.includes('id="growBlock"'));
+  assert.ok(html.includes("function resizeSelectedBlock(factor)"));
+  assert.ok(html.includes("$('blockSizeControls').hidden=false"), "controls should appear after selecting a block");
+  assert.ok(html.includes("@media(max-width:540px)"), "mobile layout should have dedicated sizing rules");
+  assert.ok(html.includes("touch-action:manipulation"), "touch buttons should avoid unnecessary gesture delay");
+});
