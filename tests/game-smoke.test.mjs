@@ -232,3 +232,16 @@ test("legacy six-region saves migrate and corrupted primary saves recover from b
   assert.equal(sandbox.g.regions.length, 27);
   assert.match(elements.saveNotice.textContent, /バックアップから復元/);
 });
+
+
+test("god-view mode uses real-time 3D and preserves the two distinct mode rules", async () => {
+  const timeline = await readFile(new URL("../timeline.html", import.meta.url), "utf8");
+  assert.ok(timeline.includes("three.module.js"), "Three.js module import is required");
+  assert.ok(timeline.includes('id="world3d"'), "3D canvas is required");
+  assert.ok(timeline.includes("history:block-placed"), "placed blocks must enter the 3D scene");
+  assert.ok(timeline.includes("history:advance"), "era advancement must update the 3D scene");
+  assert.ok(timeline.includes("mode==='branch'?disruptBlocks:disruptBlocks.concat(restoreBlocks)"), "branch mode must expose disruption blocks only");
+  assert.ok(timeline.includes("ローカルの試作対戦で、オンライン対戦ではありません。"), "prototype must disclose that online play is not implemented");
+  assert.ok(timeline.includes("カエサル") && timeline.includes("紫式部") && timeline.includes("ナポレオン"), "historical figures/events should be represented");
+  assert.ok(!/innerHTML\\s*=/.test(timeline), "dynamic labels should not use innerHTML");
+});
