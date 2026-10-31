@@ -1,0 +1,10 @@
+node_modules/
+www/
+android/
+dist/
+.env
+.env.*
+*.jks
+*.keystore
+local.properties
+.DS_Store
