@@ -79,6 +79,19 @@ try {
   assert.ok(placementState?.data?.placed?.length > 0, "place button should create and persist a disruption block");
   assert.ok(placementState.data.placed.every(p => p.id !== "archive" && p.id !== "education" && p.id !== "diplomacy" && p.id !== "resilience" && p.id !== "science" && p.id !== "law"), "human player should not place CPU protection blocks");
 
+  const sizeBefore = await page.evaluate(() => {
+    const key = Object.keys(localStorage).find(k => k.endsWith("-autosave"));
+    const data = JSON.parse(localStorage.getItem(key));
+    return data.placed[data.placed.length - 1].scale;
+  });
+  await page.locator("#growBlock").click();
+  const sizeAfter = await page.evaluate(() => {
+    const key = Object.keys(localStorage).find(k => k.endsWith("-autosave"));
+    const data = JSON.parse(localStorage.getItem(key));
+    return data.placed[data.placed.length - 1].scale;
+  });
+  assert.ok(sizeAfter.x > sizeBefore.x && sizeAfter.y > sizeBefore.y && sizeAfter.z > sizeBefore.z, "resize control should enlarge and persist the selected block");
+
   await page.locator("#saveButton").click();
   const saveKey = await page.evaluate(() => Object.keys(localStorage).find(k => k.includes("slot-1")));
   assert.ok(saveKey, "manual save should create local slot 1");
@@ -101,8 +114,17 @@ try {
   }
   const feed = await page.locator("#feed").innerText();
   assert.match(feed, /対戦結果：/, "reaching the last era should calculate and display a versus result");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(100);
+  const mobileLayout = await page.evaluate(() => {
+    const mode = document.querySelector(".mode-switch").getBoundingClientRect();
+    const label = document.querySelector(".center-label").getBoundingClientRect();
+    return { modeBottom: mode.bottom, labelTop: label.top, labelBottom: label.bottom, viewportWidth: innerWidth, documentWidth: document.documentElement.scrollWidth };
+  });
+  assert.ok(mobileLayout.labelTop >= mobileLayout.modeBottom, "event label must not overlap the mode switch on a mobile viewport");
+  assert.ok(mobileLayout.documentWidth <= mobileLayout.viewportWidth + 1, "mobile layout should not create horizontal page overflow");
   assert.deepEqual(pageErrors, [], "browser page should not emit uncaught JavaScript errors");
-  console.log("Browser smoke passed: 3D renderer, faction controls, block placement, save/load, graphics restoration, and end-of-timeline scoring.");
+  console.log("Browser smoke passed: 3D renderer, faction controls, block placement, save/load, graphics restoration, block resizing, mobile overlap/overflow, and end-of-timeline scoring.");
 } finally {
   if (browser) await browser.close();
   await new Promise((resolveClose) => server.close(resolveClose));
