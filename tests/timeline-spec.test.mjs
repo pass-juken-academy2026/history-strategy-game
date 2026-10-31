@@ -70,3 +70,11 @@ test("selected 3D blocks can be resized with touch-friendly on-screen controls",
   assert.ok(html.includes("@media(max-width:540px)"), "mobile layout should have dedicated sizing rules");
   assert.ok(html.includes("touch-action:manipulation"), "touch buttons should avoid unnecessary gesture delay");
 });
+
+
+test("block selection can be cleared safely after use or when starting a new game", () => {
+  assert.ok(html.includes("function deselectBlock()"), "selection cleanup should be centralized");
+  assert.ok(html.includes("if(e.key==='Escape'){deselectBlock();return}"), "Escape should clear selection");
+  assert.ok(html.includes("function reset(){deselectBlock();"), "reset should not retain a stale selected mesh");
+  assert.ok(html.includes("deselectBlock();goEra(hit.object.userData.era)"), "switching eras should clear the previous block selection");
+});
