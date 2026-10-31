@@ -58,16 +58,24 @@ try {
   const bounds = await canvas.boundingBox();
   assert.ok(bounds, "3D canvas should have a browser viewport box");
   let placed = false;
-  for (const [x, y] of [[0.78, 0.78], [0.22, 0.78], [0.68, 0.68], [0.32, 0.68], [0.5, 0.82]]) {
-    await page.mouse.click(bounds.x + bounds.width * x, bounds.y + bounds.height * y);
-    await page.waitForTimeout(120);
+  const placementAttempts = [];
+  for (const [x, y] of [[0.5, 0.48], [0.38, 0.52], [0.62, 0.52], [0.3, 0.42], [0.7, 0.42], [0.5, 0.38], [0.45, 0.58]]) {
+    const px = bounds.x + bounds.width * x;
+    const py = bounds.y + bounds.height * y;
+    const hitTarget = await page.evaluate(({ px, py }) => {
+      const target = document.elementFromPoint(px, py);
+      return { tag: target?.tagName, id: target?.id, isCanvas: target?.tagName === "CANVAS" };
+    }, { px, py });
+    placementAttempts.push({ x, y, ...hitTarget });
+    if (!hitTarget.isCanvas) continue;
+    await page.mouse.click(px, py);
+    await page.waitForTimeout(150);
     placed = await page.evaluate(() => Object.keys(localStorage).some(k => k.includes("slot-1") && (() => {
       try { return JSON.parse(localStorage.getItem(k)).placed?.length > 0; } catch { return false; }
     })()));
     if (placed) break;
   }
-  // UI actions persist to slot 1, so a real block placement should produce saved placed data.
-  assert.ok(placed, "clicking the 3D world should place and persist a disruption block");
+  assert.ok(placed, "clicking the 3D world should place and persist a disruption block; attempts=" + JSON.stringify(placementAttempts));
 
   await page.locator("#saveButton").click();
   const saveKey = await page.evaluate(() => Object.keys(localStorage).find(k => k.includes("slot-1")));
