@@ -1,11 +1,27 @@
 const CACHE_NAME = "history-strategy-shell-v1";
 const APP_SHELL = ["./", "./index.html", "./manifest.json", "./icon.svg", "./version.json"];
 
+function isCacheableStaticAsset(url) {
+  return /\.(?:js|mjs|css|svg|png|webp|ico|woff2?)$/i.test(url.pathname)
+    || url.pathname.endsWith("/manifest.json");
+}
+
+function isSafeToCache(response) {
+  if (!response || !response.ok || response.type !== "basic") return false;
+  const cacheControl = response.headers.get("Cache-Control") || "";
+  if (/\b(?:no-store|private)\b/i.test(cacheControl)) return false;
+  if (response.headers.has("Set-Cookie")) return false;
+  return true;
+}
+
 self.addEventListener("install", event => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
     await Promise.all(APP_SHELL.map(async path => {
-      try { await cache.add(new Request(path, { cache: "reload" })); } catch (_) {}
+      try {
+        const response = await fetch(new Request(path, { cache: "reload" }));
+        if (isSafeToCache(response)) await cache.put(path, response);
+      } catch (_) {}
     }));
     await self.skipWaiting();
   })());
@@ -29,9 +45,9 @@ self.addEventListener("fetch", event => {
     event.respondWith((async () => {
       try {
         const fresh = await fetch(request, { cache: "no-store" });
-        if (fresh.ok && request.mode === "navigate") {
+        if (fresh.ok && request.mode === "navigate" && isSafeToCache(fresh)) {
           const cache = await caches.open(CACHE_NAME);
-          cache.put("./index.html", fresh.clone());
+          await cache.put("./index.html", fresh.clone());
         }
         return fresh;
       } catch (_) {
@@ -41,12 +57,21 @@ self.addEventListener("fetch", event => {
     return;
   }
 
+  // Only cache known static assets. Unknown same-origin URLs are fetched but never stored.
+  if (!isCacheableStaticAsset(url)) {
+    event.respondWith(fetch(request).catch(() => new Response("オフラインです。接続を確認して再試行してください。", {
+      status: 503,
+      headers: { "Content-Type": "text/plain; charset=utf-8" }
+    })));
+    return;
+  }
+
   event.respondWith((async () => {
     const cached = await caches.match(request);
     if (cached) return cached;
     try {
       const fresh = await fetch(request);
-      if (fresh.ok) (await caches.open(CACHE_NAME)).put(request, fresh.clone());
+      if (isSafeToCache(fresh)) (await caches.open(CACHE_NAME)).put(request, fresh.clone());
       return fresh;
     } catch (_) {
       return new Response("オフラインです。接続を確認して再試行してください。", {
