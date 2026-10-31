@@ -249,4 +249,8 @@ test("god-view mode uses real-time 3D and preserves the two distinct mode rules"
   assert.ok(timeline.includes("draggingBlock=selectedBlockMesh") && timeline.includes("selectedBlockMesh.scale.multiplyScalar"), "placed blocks must be draggable and resizable");
   assert.ok(timeline.includes("個人情報・ログインは不要です"), "prototype must disclose local no-login operation");
   assert.ok(timeline.includes("let autoFlow=false;let autoTimer=null;let activeSlot=1;"), "module declarations must not contain a literal escaped newline");
+  const moduleScript = timeline.match(/<script type="module">([\\s\\S]*?)<\\/script>/i);
+  assert.ok(moduleScript, "3D module script is required");
+  const syntaxOnly = moduleScript[1].replace(/^import .*?;\\s*/gm, "");
+  assert.doesNotThrow(() => new vm.Script(syntaxOnly), "3D module script must parse after browser imports are removed");
 });
