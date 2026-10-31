@@ -23,6 +23,7 @@ test("core game controls and factions exist", () => {
 
 test("save, PWA, and update mechanisms are wired", () => {
   assert.ok(html.includes("history-strategy-save-v1"), "local save key missing");
+  assert.ok(html.includes("history-strategy-save-backup-v1"), "save backup key missing");
   assert.ok(html.includes("checkForUpdates"), "version check missing");
   assert.ok(html.includes("serviceWorker.register"), "service worker registration missing");
   assert.ok(html.includes('rel="manifest"'), "web manifest missing");
@@ -124,6 +125,10 @@ test("saved-game loader bounds input and validates saved state", () => {
   const loader = html.match(/function loadSavedGame\(\)\{[\s\S]*?\nfunction log/);
   assert.ok(loader, "saved-game loader should exist");
   assert.ok(loader[0].includes("raw.length>100000"), "saved data size should be bounded");
+  assert.ok(loader[0].includes("loadSavedGameData(primary)"), "primary save should be attempted first");
+  assert.ok(loader[0].includes("loadSavedGameData(backup)"), "backup save should be attempted if primary fails");
+  assert.ok(html.includes("function loadSavedGameData(raw)"), "save validation should be reusable for fallback recovery");
+  assert.ok(html.indexOf("history-strategy-save-backup-v1',serialized") < html.indexOf("history-strategy-save-v1',serialized"), "backup should be written before primary");
   assert.ok(loader[0].includes("Number.isFinite"), "numeric values should be validated");
   assert.ok(loader[0].includes("checkedRegions"), "region state should be rebuilt from trusted templates");
 });
