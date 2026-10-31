@@ -72,3 +72,7 @@ test("the page clearly identifies online multiplayer as not implemented", () => 
 test("loading a save reapplies the saved graphics quality to the renderer", () => {
   assert.match(html, /function loadSlot\(\)\{[\s\S]*?restoreSave\(\);applyQuality\(\);rebuildPlacedBlocks\(\)/);
 });
+
+test("loading an empty save slot does not reset the current game", () => {
+  assert.match(html, /if\(!localStorage\.getItem\(slotKey\(slot\)\)\)\{toast\('このスロットに保存データがありません'\);return\}/);
+});
