@@ -78,3 +78,10 @@ test("block selection can be cleared safely after use or when starting a new gam
   assert.ok(html.includes("function reset(){deselectBlock();"), "reset should not retain a stale selected mesh");
   assert.ok(html.includes("deselectBlock();goEra(hit.object.userData.era)"), "switching eras should clear the previous block selection");
 });
+
+
+test("block resizing clamps each axis independently instead of changing vector direction", () => {
+  assert.ok(html.includes("const bounded=v=>Math.max(.5,Math.min(2.5,v))"));
+  assert.ok(html.includes("selectedBlockMesh.scale.set(bounded(next.x),bounded(next.y),bounded(next.z))"));
+  assert.ok(!html.includes("selectedBlockMesh.scale.clampLength(.5,2.5)"), "resize should not use vector-length clamping");
+});
