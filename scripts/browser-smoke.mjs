@@ -91,6 +91,32 @@ try {
   }, beforeResize.key);
   assert.ok(afterResize.sx > beforeResize.transform.sx && afterResize.sy > beforeResize.transform.sy && afterResize.sz > beforeResize.transform.sz, "resize button should enlarge and persist block dimensions");
 
+  const beforeDrag = await page.evaluate(() => {
+    const g = window.eval("blockMeshes[blockMeshes.length - 1]");
+    const cam = window.eval("camera");
+    const renderer = window.eval("renderer");
+    const p = g.position.clone().project(cam);
+    const rect = renderer.domElement.getBoundingClientRect();
+    return {
+      x: rect.left + (p.x + 1) * rect.width / 2,
+      y: rect.top + (1 - p.y) * rect.height / 2,
+      worldX: g.position.x,
+      worldZ: g.position.z
+    };
+  });
+  await page.mouse.move(beforeDrag.x, beforeDrag.y);
+  await page.mouse.down();
+  await page.mouse.move(beforeDrag.x + 45, beforeDrag.y + 8, { steps: 8 });
+  await page.mouse.up();
+  await page.waitForTimeout(100);
+  const afterDrag = await page.evaluate(() => {
+    const key = Object.keys(localStorage).find(k => k.endsWith("-autosave"));
+    const data = JSON.parse(localStorage.getItem(key));
+    return data.blockTransforms[data.blockTransforms.length - 1];
+  });
+  assert.ok(Math.abs(afterDrag.x - beforeDrag.worldX) > 0.05 || Math.abs(afterDrag.z - beforeDrag.worldZ) > 0.05,
+    "dragging a placed block should change and persist its world position");
+
   await page.locator("#saveButton").click();
   const saveKey = await page.evaluate(() => Object.keys(localStorage).find(k => k.includes("slot-1")));
   assert.ok(saveKey, "manual save should create local slot 1");
@@ -123,7 +149,7 @@ try {
   assert.ok(mobileLayout.labelTop >= mobileLayout.modeBottom, "event label must not overlap the mode switch on a mobile viewport");
   assert.ok(mobileLayout.documentWidth <= mobileLayout.viewportWidth + 1, "mobile layout should not create horizontal page overflow");
   assert.deepEqual(pageErrors, [], "browser page should not emit uncaught JavaScript errors");
-  console.log("Browser smoke passed: 3D renderer, faction controls, block placement, save/load, graphics restoration, block resizing, mobile overlap/overflow, and end-of-timeline scoring.");
+  console.log("Browser smoke passed: 3D renderer, faction controls, block placement, save/load, graphics restoration, block resizing and drag movement, mobile overlap/overflow, and end-of-timeline scoring.");
 } finally {
   if (browser) await browser.close();
   await new Promise((resolveClose) => server.close(resolveClose));
