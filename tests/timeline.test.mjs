@@ -55,3 +55,16 @@ test("quality settings and end-of-timeline result handling exist", () => {
   assert.match(html, /ミッション達成エンド/);
   assert.match(html, /対戦結果：/);
 });
+
+test("save restoration validates stored values and slot boundaries", () => {
+  assert.match(html, /slot<1\|\|slot>5/);
+  assert.match(html, /d\.version!==1/);
+  assert.match(html, /!\['branch','versus'\]\.includes\(d\.mode\)/);
+  assert.match(html, /!Array\.isArray\(d\.placed\)/);
+  assert.match(html, /\['low','medium','high','ultra'\]\.includes\(d\.quality\)/);
+});
+
+test("the page clearly identifies online multiplayer as not implemented", () => {
+  assert.match(html, /オンライン対戦・フレンド招待・サーバー同期は未実装です/);
+  assert.match(html, /ローカルの試作対戦で、オンライン対戦ではありません/);
+});
