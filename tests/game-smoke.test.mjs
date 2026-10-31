@@ -166,7 +166,7 @@ test("territory victory logic waits for a true majority of the 27-region map", (
       stability: 70, score: {disrupt: 0, restore: 0}, goal: "territory", turn: 1,
       regions: Array.from({length: 27}, (_, id) => ({id, owner: id < 9 ? "disrupt" : id < 18 ? "restore" : "neutral"}))
     },
-    ownedCount(side) { return this.g.regions.filter(r => r.owner === side).length; },
+    ownedCount(side) { return sandbox.g.regions.filter(r => r.owner === side).length; },
     finish(side) { winner = side; }
   };
   vm.runInNewContext(source, sandbox);
