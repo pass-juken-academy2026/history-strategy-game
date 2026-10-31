@@ -15,39 +15,43 @@ test("3D timeline page has its required controls", () => {
   }
 });
 
-test("all inline scripts parse as JavaScript", () => {
-  const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
-  assert.ok(scripts.length >= 1, "expected inline JavaScript");
+test("executable inline scripts parse as JavaScript", () => {
+  const scripts = [...html.matchAll(/<script\\b([^>]*)>([\\s\\S]*?)<\\/script>/gi)]
+    .filter((match) => !/type=["']importmap["']/.test(match[1]));
+  assert.ok(scripts.length >= 1, "expected executable inline JavaScript");
   for (const [index, match] of scripts.entries()) {
+    const source = /type=["']module["']/.test(match[1])
+      ? match[2].replace(/^\\s*import\\s+.*?;\\s*$/gm, "")
+      : match[2];
     assert.doesNotThrow(
-      () => new vm.Script(match[1], { filename: `timeline.html:inline-${index + 1}` }),
-      `inline script ${index + 1} must parse`
+      () => new vm.Script(source, { filename: `timeline.html:inline-${index + 1}` }),
+      `inline script ${index + 1} must parse after module imports are isolated`
     );
   }
 });
 
 test("branch and versus modes remain distinct", () => {
-  assert.match(html, /function setMode\(m\)/);
+  assert.match(html, /function setMode\\(m\\)/);
   assert.match(html, /分岐モード：妨害のみ/);
   assert.match(html, /対戦モード：妨害 vs 史実CPU/);
-  assert.match(html, /if\(mode==='branch'\)/);
-  assert.match(html, /if\(mode==='versus'\)/);
-  assert.match(html, /const disruptBlocks\s*=/);
-  assert.match(html, /const restoreBlocks\s*=/);
+  assert.match(html, /if\\(mode==='branch'\\)/);
+  assert.match(html, /mode==='versus'/);
+  assert.match(html, /const disruptBlocks\\s*=/);
+  assert.match(html, /const restoreBlocks\\s*=/);
 });
 
 test("save data includes game state and block transforms", () => {
-  assert.match(html, /function persistSave\(\)/);
-  assert.match(html, /localStorage\.setItem\(slotKey\(activeSlot\),JSON\.stringify\(data\)\)/);
-  assert.match(html, /blockTransforms:blockMeshes\.map/);
-  assert.match(html, /function restoreSave\(\)/);
+  assert.match(html, /function persistSave\\(\\)/);
+  assert.match(html, /localStorage\\.setItem\\(slotKey\\(activeSlot\\),JSON\\.stringify\\(data\\)\\)/);
+  assert.match(html, /blockTransforms:blockMeshes\\.map/);
+  assert.match(html, /function restoreSave\\(\\)/);
 });
 
 test("quality settings and end-of-timeline result handling exist", () => {
-  assert.match(html, /function applyQuality\(\)/);
+  assert.match(html, /function applyQuality\\(\\)/);
   assert.match(html, /quality==='low'/);
   assert.match(html, /quality==='ultra'/);
-  assert.match(html, /function finishTimeline\(\)/);
+  assert.match(html, /function finishTimeline\\(\\)/);
   assert.match(html, /ミッション達成エンド/);
   assert.match(html, /対戦結果：/);
 });
