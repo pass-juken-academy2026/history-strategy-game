@@ -128,6 +128,37 @@ try {
   }
   const feed = await page.locator("#feed").innerText();
   assert.match(feed, /対戦結果：/, "reaching the last era should calculate and display a versus result");
+
+  const victoryCases = [
+    { rule: "stability", score: 49, expected: "妨害派" },
+    { rule: "stability", score: 50, expected: "史実派" },
+    { rule: "preserve", score: 69, expected: "妨害派" },
+    { rule: "preserve", score: 70, expected: "史実派" }
+  ];
+  for (const scenario of victoryCases) {
+    const result = await page.evaluate((testCase) => {
+      document.querySelector("#feed").replaceChildren();
+      window.__gameTestHooks.setVictoryState(testCase);
+      window.__gameTestHooks.finishTimeline();
+      return document.querySelector("#feed").innerText;
+    }, scenario);
+    assert.match(result, new RegExp("対戦結果：" + scenario.expected), `victory boundary ${scenario.rule} at ${scenario.score} should resolve to ${scenario.expected}`);
+  }
+  const blockTie = await page.evaluate(() => {
+    document.querySelector("#feed").replaceChildren();
+    window.__gameTestHooks.setVictoryState({ rule: "blocks", score: 50, placedCount: 1, protectionCount: 1 });
+    window.__gameTestHooks.finishTimeline();
+    return document.querySelector("#feed").innerText;
+  });
+  assert.match(blockTie, /対戦結果：引き分け/, "equal block counts should resolve to a draw");
+  const blockWin = await page.evaluate(() => {
+    document.querySelector("#feed").replaceChildren();
+    window.__gameTestHooks.setVictoryState({ rule: "blocks", score: 50, placedCount: 2, protectionCount: 1 });
+    window.__gameTestHooks.finishTimeline();
+    return document.querySelector("#feed").innerText;
+  });
+  assert.match(blockWin, /対戦結果：妨害派/, "more disruption blocks should win the block-count rule");
+
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForTimeout(100);
   const mobileLayout = await page.evaluate(() => {
@@ -138,7 +169,7 @@ try {
   assert.ok(mobileLayout.labelTop >= mobileLayout.modeBottom, "event label must not overlap the mode switch on a mobile viewport");
   assert.ok(mobileLayout.documentWidth <= mobileLayout.viewportWidth + 1, "mobile layout should not create horizontal page overflow");
   assert.deepEqual(pageErrors, [], "browser page should not emit uncaught JavaScript errors");
-  console.log("Browser smoke passed: 3D renderer, faction controls, block placement, save/load, graphics restoration, block resizing and drag movement, mobile overlap/overflow, and end-of-timeline scoring.");
+  console.log("Browser smoke passed: 3D renderer, faction controls, block placement, save/load, graphics restoration, block resizing and drag movement, victory-condition boundaries, mobile overlap/overflow, and end-of-timeline scoring.");
 } finally {
   if (browser) await browser.close();
   await new Promise((resolveClose) => server.close(resolveClose));
