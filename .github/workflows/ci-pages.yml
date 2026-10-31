@@ -32,6 +32,12 @@ jobs:
         run: node --test tests/*.test.mjs
       - name: Prepare minimal website bundle
         run: node scripts/prepare-site.mjs && test -f dist/index.html && test -f dist/timeline.html && test -f dist/vendor/three.module.js && test -f dist/vendor/addons/controls/OrbitControls.js && test -f dist/vendor/THREE-LICENSE.txt
+      - name: Install Chromium browser test tools
+        run: |
+          npm install --no-save --ignore-scripts --no-audit --no-fund playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Run real Chromium gameplay smoke test
+        run: node scripts/browser-smoke.mjs
       - name: Validate bundled 3D JavaScript modules
         run: |
           node --input-type=module -e 'const THREE = await import("./dist/vendor/three.module.js"); if (!THREE.Scene || !THREE.WebGLRenderer) throw new Error("Three.js exports missing"); console.log("Three.js module imports successfully.")'
