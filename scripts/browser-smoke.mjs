@@ -91,19 +91,8 @@ try {
   }, beforeResize.key);
   assert.ok(afterResize.sx > beforeResize.transform.sx && afterResize.sy > beforeResize.transform.sy && afterResize.sz > beforeResize.transform.sz, "resize button should enlarge and persist block dimensions");
 
-  const beforeDrag = await page.evaluate(() => {
-    const g = window.eval("blockMeshes[blockMeshes.length - 1]");
-    const cam = window.eval("camera");
-    const renderer = window.eval("renderer");
-    const p = g.position.clone().project(cam);
-    const rect = renderer.domElement.getBoundingClientRect();
-    return {
-      x: rect.left + (p.x + 1) * rect.width / 2,
-      y: rect.top + (1 - p.y) * rect.height / 2,
-      worldX: g.position.x,
-      worldZ: g.position.z
-    };
-  });
+  const beforeDrag = await page.evaluate(() => window.__gameTestHooks.lastBlockScreenPosition());
+  assert.ok(beforeDrag, "test hook should return the placed block screen position");
   await page.mouse.move(beforeDrag.x, beforeDrag.y);
   await page.mouse.down();
   await page.mouse.move(beforeDrag.x + 45, beforeDrag.y + 8, { steps: 8 });
