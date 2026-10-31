@@ -28,6 +28,8 @@ jobs:
         run: node scripts/check-project.mjs
       - name: Run automated tests
         run: node --test tests/*.test.mjs
+      - name: Prepare minimal website bundle
+        run: node scripts/prepare-site.mjs && test -f dist/index.html
       - name: Verify Android web asset preparation
         run: node scripts/prepare-android.mjs && test -f www/index.html
 
@@ -50,7 +52,7 @@ jobs:
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: dist
       - name: Deploy only after tests pass
         id: deployment
         uses: actions/deploy-pages@v4
