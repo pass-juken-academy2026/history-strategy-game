@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="104" fill="#0b1020"/>
+  <path d="M256 56 422 152v208L256 456 90 360V152Z" fill="#17223a" stroke="#f6c76b" stroke-width="14"/>
+  <path d="M256 116v280M116 196h280M116 316h280" stroke="#33415e" stroke-width="10"/>
+  <path d="M176 152h160v208H176z" fill="#1c2740" stroke="#f6c76b" stroke-width="12"/>
+  <text x="256" y="290" font-size="104" font-family="serif" font-weight="bold" text-anchor="middle" fill="#f6c76b">歴</text>
+</svg>
