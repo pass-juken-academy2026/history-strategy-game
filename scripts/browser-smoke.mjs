@@ -59,6 +59,13 @@ try {
   assert.ok(bounds, "3D canvas should have a browser viewport box");
   await page.evaluate(() => {
     window.__placedEventCount = 0;
+    window.__canvasPointerEvents = [];
+    const canvas = document.querySelector("#world3d canvas");
+    for (const name of ["pointerdown", "pointerup", "mousedown", "mouseup", "click"]) {
+      canvas.addEventListener(name, (event) => {
+        if (window.__canvasPointerEvents.length < 20) window.__canvasPointerEvents.push({ name, x: event.clientX, y: event.clientY });
+      }, true);
+    }
     window.addEventListener("history:block-placed", () => { window.__placedEventCount += 1; });
   });
   let placed = false;
@@ -84,6 +91,7 @@ try {
   }
   const interactionDebug = await page.evaluate(() => ({
     blockPlacedEvents: window.__placedEventCount,
+    canvasPointerEvents: window.__canvasPointerEvents,
     toast: document.querySelector("#toast")?.textContent,
     savedKeys: Object.keys(localStorage).filter(k => k.includes("slot-1"))
   }));
