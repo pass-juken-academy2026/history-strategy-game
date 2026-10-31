@@ -63,6 +63,30 @@ test("campaign selection changes the playable map and starting resources", () =>
   assert.equal(map.filter(r => r.owner === "restore").length, 2);
 });
 
+
+test("all campaign choices have a six-region profile and balanced starting ownership", () => {
+  const start = html.indexOf("const campaignRegions=[");
+  const end = html.indexOf("let chosenCampaignRegion=", start);
+  const sandbox = {
+    regionsSeed: Array.from({length: 6}, (_, id) => ({
+      id, name: "base-" + id, emoji: "x", owner: id < 2 ? "restore" : id < 4 ? "disrupt" : "neutral",
+      troops: 2, dev: 0, desc: "base"
+    }))
+  };
+  vm.runInNewContext(html.slice(start, end) + ";globalThis.__campaignRegions=campaignRegions;globalThis.__campaignSetupFor=campaignSetupFor;globalThis.__makeCampaignMap=makeCampaignMap;", sandbox);
+  assert.equal(sandbox.__campaignRegions.length, 27);
+  for (const item of sandbox.__campaignRegions) {
+    const setup = sandbox.__campaignSetupFor(item.name);
+    const map = sandbox.__makeCampaignMap(item.name, "restore");
+    assert.equal(setup.mapNames.length, 6, item.name + " map should have six labels");
+    assert.equal(map.length, 6, item.name + " map should have six regions");
+    assert.equal(map[0].name, item.name);
+    assert.equal(map.filter(r => r.owner === "restore").length, 2);
+    assert.equal(map.filter(r => r.owner === "disrupt").length, 2);
+    assert.equal(map.filter(r => r.owner === "neutral").length, 2);
+  }
+});
+
 test("development is capped and attack is a declared action control", () => {
   assert.ok(html.includes('id="attack"'), "attack button should exist in markup");
   assert.ok(html.includes("if(r.dev>=5)"), "development level cap should be enforced");
