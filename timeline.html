@@ -28,11 +28,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 const $=id=>document.getElementById(id);
 const SAVE_KEY="history-god-view-save-v1";let autoFlow=false;let autoTimer=null;let activeSlot=1;let quality="high";let campaignType="sandbox";let victoryRule="stability";
 const eras=[
-{name:'古代',years:'〜500年',person:'ユリウス・カエサルと共和政末期',desc:'古代ローマではカエサルの台頭などを経て共和政から帝政への移行が進んだ。',icon:'🏛️',event:'ローマの政治体制が大きく変化した。'},
-{name:'中世',years:'500〜1500年',person:'紫式部と『源氏物語』',desc:'平安時代の宮廷文化を伝える『源氏物語』は、日本文学史に残る長編物語。',icon:'🏰',event:'文学・学問・交易が文化の継承を支えた。'},
-{name:'近世',years:'1500〜1800年',person:'グーテンベルクと印刷技術',desc:'活版印刷の普及は書物や情報の流通に大きな変化をもたらした。',icon:'📚',event:'印刷技術が知識の伝達を大きく変えた。'},
-{name:'近代',years:'1800〜1900年',person:'ナポレオン時代と産業革命',desc:'政治・法制度の再編と産業化が、生産・交通・労働のあり方を変えた。',icon:'⚙️',event:'政治制度と産業化が社会を変えた。'},
-{name:'現代',years:'1900年〜',person:'マリー・キュリーと科学の発展',desc:'科学研究、情報通信、国際協力が現代社会を形づくってきた。',icon:'🌐',event:'科学研究と国際協力が社会を変え続ける。'}];
+{name:'古代',years:'〜500年',person:'ユリウス・カエサルと共和政末期',desc:'古代ローマではカエサルの台頭などを経て共和政から帝政への移行が進んだ。',icon:'🏛️',event:'ローマの政治体制が大きく変化した。',fact:'共和政末期の内戦と権力集中を経て、ローマは帝政へ移行した。',source:'参考資料：ブリタニカ百科事典「Julius Caesar」「Roman Empire」',altered:'架空の分岐：権力移行の時期や制度が変化する可能性がある。'},
+{name:'中世',years:'500〜1500年',person:'紫式部と『源氏物語』',desc:'平安時代の宮廷文化を伝える『源氏物語』は、日本文学史に残る長編物語。',icon:'🏰',event:'文学・学問・交易が文化の継承を支えた。',fact:'『源氏物語』は平安時代に成立した日本文学を代表する作品の一つ。',source:'参考資料：国文学研究資料館の源氏物語関連資料',altered:'架空の分岐：写本や教育、宮廷文化の伝わり方が変わる設定。'},
+{name:'近世',years:'1500〜1800年',person:'グーテンベルクと印刷技術',desc:'活版印刷の普及は書物や情報の流通に大きな変化をもたらした。',icon:'📚',event:'印刷技術が知識の伝達を大きく変えた。',fact:'ヨーロッパでの活版印刷の普及は書物の生産と知識流通に影響した。',source:'参考資料：大英図書館の印刷史関連解説',altered:'架空の分岐：印刷物の流通速度や知識へのアクセスが変わる設定。'},
+{name:'近代',years:'1800〜1900年',person:'ナポレオン時代と産業革命',desc:'政治・法制度の再編と産業化が、生産・交通・労働のあり方を変えた。',icon:'⚙️',event:'政治制度と産業化が社会を変えた。',fact:'ナポレオン期の法制度改革と産業革命は、異なる地域や時期に社会を変化させた。',source:'参考資料：ブリタニカ百科事典「Napoleonic Code」「Industrial Revolution」',altered:'架空の分岐：制度改革や産業化の進み方が変わる設定。'},
+{name:'現代',years:'1900年〜',person:'マリー・キュリーと科学の発展',desc:'科学研究、情報通信、国際協力が現代社会を形づくってきた。',icon:'🌐',event:'科学研究と国際協力が社会を変え続ける。',fact:'マリー・キュリーの研究は放射能研究の発展に重要な役割を果たした。',source:'参考資料：ノーベル賞公式サイト「Marie Curie — Facts」',altered:'架空の分岐：科学技術の普及や国際協力の展開が変わる設定。'}];
 const disruptBlocks=[{id:'delay',icon:'⏳',name:'時間遅延',desc:'事件の進行を遅らせる',delta:12,color:0xffa733},{id:'fog',icon:'🌫️',name:'情報の霧',desc:'情報伝達を変える',delta:10,color:0xffa733},{id:'detour',icon:'↪️',name:'分岐ルート',desc:'別の歴史を生み出す',delta:15,color:0xffa733},{id:'resource',icon:'📦',name:'資源ブロック',desc:'架空の資源配分を変える',delta:9,color:0xffa733},{id:'rumor',icon:'💬',name:'うわさの渦',desc:'物語上の世論を揺らす',delta:11,color:0xffa733},{id:'barrier',icon:'🧱',name:'障害ブロック',desc:'コースに架空の障害を置く',delta:13,color:0xffa733}];
 const restoreBlocks=[{id:'archive',icon:'📜',name:'史料アーカイブ',desc:'記録を保存し検証する',delta:-10,color:0x24cfff},{id:'education',icon:'🎓',name:'学びの拠点',desc:'知識と教育を支える',delta:-12,color:0x24cfff},{id:'diplomacy',icon:'🤝',name:'対話の場',desc:'対立を対話へ導く',delta:-11,color:0x24cfff},{id:'resilience',icon:'🛡️',name:'復旧支援',desc:'社会の回復力を高める',delta:-13,color:0x24cfff},{id:'science',icon:'🔬',name:'科学研究',desc:'根拠に基づく解決を支える',delta:-9,color:0x24cfff},{id:'law',icon:'⚖️',name:'制度の保護',desc:'法と公共制度を守る',delta:-12,color:0x24cfff}];
 let mode='branch',eraIndex=0,selected='delay',stability=100,funds=1000,food=800,dev=1,placed=[],turn=0;
