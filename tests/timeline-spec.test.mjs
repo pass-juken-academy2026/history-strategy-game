@@ -132,3 +132,13 @@ test("offline messaging matches the locally bundled Three.js implementation", ()
   assert.ok(html.includes("オンラインで一度開いてキャッシュされた状態で確認してください"), "offline claims should be qualified by cache availability");
   assert.ok(!html.includes("Three.jsの読み込みにはネット接続が必要です"), "obsolete CDN-dependent notice should be removed");
 });
+
+
+test("project documentation does not claim the 3D page still depends on a Three.js CDN", async () => {
+  const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
+  const spec = await readFile(new URL("../GAME_SPEC.md", import.meta.url), "utf8");
+  assert.ok(readme.includes("Three.jsとOrbitControlsはリポジトリ内に同梱しています"));
+  assert.ok(readme.includes("初回アクセスやキャッシュがない状態での完全オフライン起動"));
+  assert.ok(spec.includes("外部CDNへの実行時依存は解消済み"));
+  assert.ok(!readme.includes("Three.js CDNを読み込むため初回起動時にインターネット接続が必要です"));
+});
