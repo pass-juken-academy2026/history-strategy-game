@@ -73,7 +73,7 @@ try {
   await page.locator("#placeSelectedButton").click();
   await page.waitForTimeout(100);
   const placementState = await page.evaluate(() => {
-    const key = Object.keys(localStorage).find(k => k.includes("slot-1"));
+    const key = Object.keys(localStorage).find(k => k.endsWith("-autosave"));
     return key ? { key, data: JSON.parse(localStorage.getItem(key)) } : null;
   });
   assert.ok(placementState?.data?.placed?.length > 0, "place button should create and persist a disruption block");
