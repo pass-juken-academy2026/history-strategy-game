@@ -1,4 +1,4 @@
-const CACHE_NAME = "history-strategy-shell-v9";
+const CACHE_NAME = "history-strategy-shell-v10";
 const APP_SHELL = ["./", "./index.html", "./manifest.json", "./icon.svg", "./version.json", "./timeline.html", "./vendor/three.module.js", "./vendor/addons/controls/OrbitControls.js", "./vendor/THREE-LICENSE.txt"];
 
 function isCacheableStaticAsset(url) {
@@ -17,11 +17,14 @@ function isSafeToCache(response) {
 self.addEventListener("install", event => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
+    // Do not activate a worker that silently failed to cache required offline assets.
+    // Keeping the previous worker active is safer than advertising a broken app shell.
     await Promise.all(APP_SHELL.map(async path => {
-      try {
-        const response = await fetch(new Request(path, { cache: "reload" }));
-        if (isSafeToCache(response)) await cache.put(path, response);
-      } catch (_) {}
+      const response = await fetch(new Request(path, { cache: "reload" }));
+      if (!isSafeToCache(response)) {
+        throw new Error(`Required offline asset could not be cached: ${path}`);
+      }
+      await cache.put(path, response);
     }));
     await self.skipWaiting();
   })());
