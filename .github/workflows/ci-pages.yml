@@ -31,7 +31,7 @@ jobs:
       - name: Run automated tests
         run: node --test tests/*.test.mjs
       - name: Prepare minimal website bundle
-        run: node scripts/prepare-site.mjs && test -f dist/index.html
+        run: node scripts/prepare-site.mjs && test -f dist/index.html && test -f dist/timeline.html && test -f dist/vendor/three.module.js && test -f dist/vendor/addons/controls/OrbitControls.js && test -f dist/vendor/THREE-LICENSE.txt
       - name: Upload tested website bundle
         uses: actions/upload-artifact@v4
         with:
