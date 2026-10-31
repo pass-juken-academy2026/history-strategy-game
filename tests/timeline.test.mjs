@@ -9,7 +9,7 @@ test("3D timeline page has its required controls", () => {
   for (const id of [
     "world3d", "eraTrack", "saveButton", "loadButton", "settingsButton",
     "advanceButton", "qualitySelect", "campaignSelect", "cpuDifficultySelect",
-    "victorySelect", "applySettings", "networkNotice"
+    "victorySelect", "applySettings", "networkNotice", "placeSelectedButton"
   ]) {
     assert.match(html, new RegExp('id="' + id + '"'), `missing #${id}`);
   }
@@ -74,6 +74,11 @@ test("the page clearly identifies online multiplayer as not implemented", () => 
 test("3D click placement is handled by click events while pointerup only finalizes dragging", () => {
   assert.match(html, /addEventListener\('click',e=>\{if\(!lastPointerWasDrag\)pickObject\(e\);lastPointerWasDrag=false\}\)/);
   assert.match(html, /addEventListener\('pointerup',e=>\{lastPointerWasDrag=pointerMoved/);
+});
+
+test("a dedicated accessible control places the selected block into the 3D scene", () => {
+  assert.match(html, /id="placeSelectedButton"/);
+  assert.match(html, /\$\('placeSelectedButton'\)\.addEventListener\('click',place\)/);
 });
 
 test("3D clicks prioritize the nearest object so background era markers cannot steal block placement", () => {
