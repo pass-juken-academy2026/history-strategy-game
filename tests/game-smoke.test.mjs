@@ -68,7 +68,7 @@ test("campaign selection changes the playable map and starting resources", () =>
 });
 
 
-test("all campaign choices have a six-region profile and balanced starting ownership", () => {
+test("all campaign choices have a 27-region profile and balanced starting ownership", () => {
   const start = html.indexOf("const campaignRegions=[");
   const end = html.indexOf("let chosenCampaignRegion=", start);
   const sandbox = {
@@ -147,4 +147,10 @@ test("random technology events never exceed development level five", () => {
   assert.ok(html.includes("const candidates=g.regions.filter(r=>r.dev<5)"), "events should only choose regions below the cap");
   assert.ok(html.includes("r.dev=Math.min(5,r.dev+1)"), "event development should be capped at level five");
   assert.ok(html.includes("全地域が開発上限に達したため"), "event should have a fallback when every region is capped");
+});
+
+test("territory victory requires a majority of all regions, not a fixed small count", () => {
+  assert.ok(html.includes("const territoryTarget=Math.floor(g.regions.length/2)+1"));
+  assert.ok(html.includes("ownedCount('disrupt')>=territoryTarget"));
+  assert.ok(html.includes("ownedCount('restore')>=territoryTarget"));
 });
