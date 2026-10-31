@@ -71,6 +71,12 @@ test("the page clearly identifies online multiplayer as not implemented", () => 
   assert.match(html, /ローカルの試作対戦で、オンライン対戦ではありません/);
 });
 
+test("3D scene initialization calls the implemented landmark builder", () => {
+  assert.match(html, /function landmarks\(\)/);
+  assert.match(html, /makeEarth\(\);makeTimeline\(\);landmarks\(\);animate\(\)/);
+  assert.doesNotMatch(html, /makeLandmarks\(\)/);
+});
+
 test("3D click placement is handled by click events while pointerup only finalizes dragging", () => {
   assert.match(html, /addEventListener\('click',e=>\{if\(!lastPointerWasDrag\)pickObject\(e\);lastPointerWasDrag=false\}\)/);
   assert.match(html, /addEventListener\('pointerup',e=>\{lastPointerWasDrag=pointerMoved/);
