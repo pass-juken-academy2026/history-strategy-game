@@ -51,7 +51,20 @@ self.addEventListener("fetch", event => {
         }
         return fresh;
       } catch (_) {
-        return (await caches.match(request)) || (await caches.match("./index.html"));
+        const cachedExact = await caches.match(request);
+        if (cachedExact) return cachedExact;
+
+        // A cache-busting query string should not make an already cached page unavailable offline.
+        const offlineUrl = new URL(request.url);
+        offlineUrl.search = "";
+        offlineUrl.hash = "";
+        const cachedWithoutQuery = await caches.match(offlineUrl.href);
+        if (cachedWithoutQuery) return cachedWithoutQuery;
+
+        return (await caches.match("./index.html")) || new Response(
+          "このページはまだオフライン用に保存されていません。オンラインで一度開いてから再試行してください。",
+          { status: 503, headers: { "Content-Type": "text/plain; charset=utf-8" } }
+        );
       }
     })());
     return;
