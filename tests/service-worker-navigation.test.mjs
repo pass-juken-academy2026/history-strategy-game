@@ -100,3 +100,48 @@ test("service worker cache version changes when the required app shell changes",
   assert.ok(serviceWorker.includes('"./vendor/three.module.js"'));
   assert.ok(serviceWorker.includes('"./vendor/addons/controls/OrbitControls.js"'));
 });
+
+
+test("service worker install only activates after every required asset is cached", async () => {
+  const vm = await import("node:vm");
+  async function runInstall(failPath = null) {
+    const listeners = new Map();
+    const stored = [];
+    let skipWaitingCalls = 0;
+    const cache = { put: async (key, response) => { stored.push(String(key)); } };
+    const context = {
+      URL,
+      Request,
+      Response,
+      Promise,
+      Error,
+      self: {
+        location: { origin: "https://game.example" },
+        addEventListener: (name, handler) => listeners.set(name, handler),
+        skipWaiting: async () => { skipWaitingCalls += 1; }
+      },
+      caches: { open: async () => cache },
+      fetch: async request => {
+        if (failPath && String(request.url || request).endsWith(failPath)) {
+          return { ok: false, type: "basic", headers: { get: () => "", has: () => false } };
+        }
+        return { ok: true, type: "basic", headers: { get: () => "", has: () => false } };
+      }
+    };
+    vm.runInNewContext(serviceWorker, context, { filename: "sw.js" });
+    let waitUntilPromise;
+    listeners.get("install")({ waitUntil: promise => { waitUntilPromise = promise; } });
+    let error = null;
+    try { await waitUntilPromise; } catch (caught) { error = caught; }
+    return { stored, skipWaitingCalls, error };
+  }
+
+  const success = await runInstall();
+  assert.equal(success.error, null, "all successful assets should allow installation");
+  assert.equal(success.skipWaitingCalls, 1, "worker should activate only after precache succeeds");
+  assert.equal(success.stored.length, 9, "all nine required app-shell assets should be cached");
+
+  const failure = await runInstall("timeline.html");
+  assert.ok(failure.error instanceof Error || failure.error?.message?.includes("Required offline asset"), "a failed required asset should reject installation");
+  assert.equal(failure.skipWaitingCalls, 0, "worker must not skip waiting when an app-shell asset fails");
+});
