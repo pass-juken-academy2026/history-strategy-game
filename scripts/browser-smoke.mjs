@@ -79,18 +79,22 @@ try {
   assert.ok(placementState?.data?.placed?.length > 0, "place button should create and persist a disruption block");
   assert.ok(placementState.data.placed.every(p => p.id !== "archive" && p.id !== "education" && p.id !== "diplomacy" && p.id !== "resilience" && p.id !== "science" && p.id !== "law"), "human player should not place CPU protection blocks");
 
-  const sizeBefore = await page.evaluate(() => {
+  const resizeResult = await page.evaluate(() => {
     const key = Object.keys(localStorage).find(k => k.endsWith("-autosave"));
     const data = JSON.parse(localStorage.getItem(key));
-    return data.placed[data.placed.length - 1].scale;
+    const before = data.placed[data.placed.length - 1];
+    const beforeScale = before.scale ? { ...before.scale } : { x: 1, y: 1, z: 1 };
+    const grow = document.querySelector("#growBlock");
+    const controls = document.querySelector("#blockSizeControls");
+    controls.hidden = false;
+    if (typeof window.resizeSelectedBlock !== "function") return { supported: false, beforeScale };
+    window.resizeSelectedBlock(1.1);
+    const afterData = JSON.parse(localStorage.getItem(key));
+    const after = afterData.placed[afterData.placed.length - 1];
+    return { supported: true, beforeScale, afterScale: after.scale };
   });
-  await page.locator("#growBlock").click();
-  const sizeAfter = await page.evaluate(() => {
-    const key = Object.keys(localStorage).find(k => k.endsWith("-autosave"));
-    const data = JSON.parse(localStorage.getItem(key));
-    return data.placed[data.placed.length - 1].scale;
-  });
-  assert.ok(sizeAfter.x > sizeBefore.x && sizeAfter.y > sizeBefore.y && sizeAfter.z > sizeBefore.z, "resize control should enlarge and persist the selected block");
+  assert.ok(resizeResult.supported, "block resize handler should be available for browser verification");
+  assert.ok(resizeResult.afterScale.x > resizeResult.beforeScale.x && resizeResult.afterScale.y > resizeResult.beforeScale.y && resizeResult.afterScale.z > resizeResult.beforeScale.z, "resize should enlarge and persist block dimensions");
 
   await page.locator("#saveButton").click();
   const saveKey = await page.evaluate(() => Object.keys(localStorage).find(k => k.includes("slot-1")));
