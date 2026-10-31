@@ -42,3 +42,21 @@ test("settings do not ask for account or personal information and can clear loca
   assert.ok(html.includes("localStorage.removeItem(slotKey(i))"));
   assert.ok(!/innerHTML\s*=/.test(html), "dynamic UI must not interpolate untrusted values into innerHTML");
 });
+
+test("camera, drag placement, resize, and save slots have regression coverage", () => {
+  assert.ok(html.includes("new OrbitControls(camera,renderer.domElement)"), "3D camera controls should be wired");
+  assert.ok(html.includes("controls.enableDamping=true"), "camera movement should be smoothed");
+  assert.ok(html.includes("renderer.domElement.setPointerCapture?.(e.pointerId)"), "dragging should retain pointer input");
+  assert.ok(html.includes("renderer.domElement.addEventListener('pointermove'"), "block drag movement should be wired");
+  assert.ok(html.includes("window.addEventListener('resize',resize)"), "renderer should respond to viewport resizing");
+  assert.ok(html.includes("function slotKey(slot)"), "save slots should have isolated keys");
+  assert.ok(html.includes("Number.isInteger(slot)||slot<1||slot>5"), "save/load must reject invalid slot numbers");
+  assert.ok(html.includes("d.version!==1"), "unknown save formats should be rejected");
+  assert.ok(html.includes("!Array.isArray(d.placed)"), "malformed saved block data should be rejected");
+});
+
+test("the 3D prototype discloses its online and network-dependent limitations", () => {
+  assert.ok(html.includes("オンライン対戦・フレンド招待・サーバー同期は未実装です"));
+  assert.ok(html.includes("Three.js") && html.includes("ネット接続が必要です"));
+  assert.ok(html.includes("アカウント登録・ログイン・個人情報入力は不要"));
+});
