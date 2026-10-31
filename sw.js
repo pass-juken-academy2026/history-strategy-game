@@ -47,7 +47,7 @@ self.addEventListener("fetch", event => {
         const fresh = await fetch(request, { cache: "no-store" });
         if (fresh.ok && request.mode === "navigate" && isSafeToCache(fresh)) {
           const cache = await caches.open(CACHE_NAME);
-          await cache.put("./index.html", fresh.clone());
+          await cache.put(request, fresh.clone());
         }
         return fresh;
       } catch (_) {
