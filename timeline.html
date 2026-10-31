@@ -26,7 +26,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 const $=id=>document.getElementById(id);
-const SAVE_KEY="history-god-view-save-v1";let autoFlow=false;let autoTimer=null;\nconst eras=[
+const SAVE_KEY="history-god-view-save-v1";let autoFlow=false;let autoTimer=null;let activeSlot=1;
+const eras=[
 {name:'古代',years:'〜500年',person:'ユリウス・カエサルと共和政末期',desc:'古代ローマではカエサルの台頭などを経て共和政から帝政への移行が進んだ。',icon:'🏛️',event:'ローマの政治体制が大きく変化した。'},
 {name:'中世',years:'500〜1500年',person:'紫式部と『源氏物語』',desc:'平安時代の宮廷文化を伝える『源氏物語』は、日本文学史に残る長編物語。',icon:'🏰',event:'文学・学問・交易が文化の継承を支えた。'},
 {name:'近世',years:'1500〜1800年',person:'グーテンベルクと印刷技術',desc:'活版印刷の普及は書物や情報の流通に大きな変化をもたらした。',icon:'📚',event:'印刷技術が知識の伝達を大きく変えた。'},
