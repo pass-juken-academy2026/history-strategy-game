@@ -37,3 +37,18 @@ test("manifest and version metadata are valid", async () => {
 test("online multiplayer is not falsely presented as implemented", () => {
   assert.ok(html.includes("オンライン対戦はこの版では未接続です"));
 });
+
+test("map rendering avoids interpreting saved region strings as HTML", () => {
+  const renderMap = html.match(/function renderMap\(\)\{[\s\S]*?\nfunction renderStats/);
+  assert.ok(renderMap, "renderMap function should exist");
+  assert.ok(renderMap[0].includes("textContent"), "map labels should use textContent");
+  assert.ok(!renderMap[0].includes(".innerHTML"), "map rendering must not interpolate saved data into innerHTML");
+});
+
+test("saved-game loader bounds input and validates saved state", () => {
+  const loader = html.match(/function loadSavedGame\(\)\{[\s\S]*?\nfunction log/);
+  assert.ok(loader, "saved-game loader should exist");
+  assert.ok(loader[0].includes("raw.length>100000"), "saved data size should be bounded");
+  assert.ok(loader[0].includes("Number.isFinite"), "numeric values should be validated");
+  assert.ok(loader[0].includes("checkedRegions"), "region state should be rebuilt from trusted templates");
+});
