@@ -31,6 +31,7 @@ test("save, PWA, and update mechanisms are wired", () => {
 test("manifest and version metadata are valid", async () => {
   const manifest = JSON.parse(await readFile(new URL("../manifest.json", import.meta.url), "utf8"));
   const version = JSON.parse(await readFile(new URL("../version.json", import.meta.url), "utf8"));
+  const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
   assert.equal(manifest.lang, "ja");
   assert.match(version.version, /^\d+\.\d+\.\d+$/);
 });
