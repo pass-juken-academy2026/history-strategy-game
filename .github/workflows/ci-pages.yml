@@ -24,6 +24,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Install pinned dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
       - name: Run project checks
         run: node scripts/check-project.mjs
       - name: Run automated tests
