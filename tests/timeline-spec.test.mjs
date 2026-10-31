@@ -116,3 +116,12 @@ test("versus mode offers persisted CPU difficulty levels with different protecti
   assert.ok(html.includes("cpuDifficulty,campaignType,victoryRule") || html.includes("campaignType,victoryRule,cpuDifficulty"), "difficulty should persist in saves");
   assert.ok(html.includes("cpuDifficulty=['easy','normal','hard'].includes(d.cpuDifficulty)?d.cpuDifficulty:'normal'"), "invalid or old saves should fall back safely");
 });
+
+
+test("hard CPU adapts protection choices to victory rules and avoids same-era repetition", () => {
+  assert.ok(html.includes("const used=new Set(placed.filter(p=>p.era===eraIndex&&p.source==='cpu').map(p=>p.id))"), "CPU should track its same-era choices");
+  assert.ok(html.includes("const available=restoreBlocks.filter(b=>!used.has(b.id))"), "CPU should prefer unused protection blocks in the current era");
+  assert.ok(html.includes("if(victoryRule==='stability')score="), "hard CPU should account for the stability victory rule");
+  assert.ok(html.includes("else if(victoryRule==='preserve')score="), "hard CPU should account for the preservation threshold");
+  assert.ok(html.includes("disruptionCount>0?1:0"), "hard CPU should respond to player disruption");
+});
