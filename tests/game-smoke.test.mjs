@@ -35,6 +35,46 @@ test("manifest and version metadata are valid", async () => {
   assert.match(version.version, /^\d+\.\d+\.\d+$/);
 });
 
+
+test("campaign selection changes the playable map and starting resources", () => {
+  const start = html.indexOf("const campaignRegions=[");
+  const end = html.indexOf("let chosenCampaignRegion=", start);
+  assert.ok(start >= 0 && end > start, "campaign setup declarations should exist");
+  const declarations = html.slice(start, end);
+  const sandbox = {
+    regionsSeed: Array.from({length: 6}, (_, id) => ({
+      id, name: "base-" + id, emoji: "x", owner: id < 2 ? "restore" : id < 4 ? "disrupt" : "neutral",
+      troops: 2, dev: 0, desc: "base"
+    }))
+  };
+  vm.runInNewContext(declarations + ";globalThis.__campaignSetupFor=campaignSetupFor;globalThis.__makeCampaignMap=makeCampaignMap;", sandbox);
+  const asia = sandbox.__campaignSetupFor("東アジア");
+  const america = sandbox.__campaignSetupFor("北アメリカ");
+  assert.equal(asia.group, "アジア");
+  assert.equal(america.group, "アメリカ大陸");
+  assert.equal(asia.mapNames.length, 6);
+  assert.notEqual(asia.mapNames[0], america.mapNames[0]);
+  assert.notDeepEqual({...asia.bonus}, {...america.bonus});
+  const map = sandbox.__makeCampaignMap("北アメリカ", "disrupt");
+  assert.equal(map.length, 6);
+  assert.equal(map[0].name, "北アメリカ");
+  assert.equal(map[0].owner, "disrupt");
+  assert.equal(map.filter(r => r.owner === "disrupt").length, 2);
+  assert.equal(map.filter(r => r.owner === "restore").length, 2);
+});
+
+test("development is capped and attack is a declared action control", () => {
+  assert.ok(html.includes('id="attack"'), "attack button should exist in markup");
+  assert.ok(html.includes("if(r.dev>=5)"), "development level cap should be enforced");
+  assert.ok(html.includes("dev:Math.min(r.dev,5)"), "old saves should migrate to the new cap");
+  assert.ok(html.includes("for(const id of ['recruit','develop','diplomacy','mission','protect','attack','endTurn'])"), "CPU turns should disable every player action");
+});
+
+test("online and friends UI clearly discloses missing server implementation", () => {
+  assert.ok(html.includes("オンライン対戦（準備中）"));
+  assert.ok(html.includes("フレンド追加・招待は、サーバー連携が未実装"));
+});
+
 test("online multiplayer is not falsely presented as implemented", () => {
   assert.ok(html.includes("オンライン対戦はこの版では未接続です"));
 });
