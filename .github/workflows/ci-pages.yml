@@ -32,6 +32,11 @@ jobs:
         run: node --test tests/*.test.mjs
       - name: Prepare minimal website bundle
         run: node scripts/prepare-site.mjs && test -f dist/index.html && test -f dist/timeline.html && test -f dist/vendor/three.module.js && test -f dist/vendor/addons/controls/OrbitControls.js && test -f dist/vendor/THREE-LICENSE.txt
+      - name: Validate bundled 3D JavaScript modules
+        run: |
+          node --input-type=module -e 'const THREE = await import("./dist/vendor/three.module.js"); if (!THREE.Scene || !THREE.WebGLRenderer) throw new Error("Three.js exports missing"); console.log("Three.js module imports successfully.")'
+          node --check dist/vendor/three.module.js
+          node --check dist/vendor/addons/controls/OrbitControls.js
       - name: Upload tested website bundle
         uses: actions/upload-artifact@v4
         with:
@@ -41,6 +46,11 @@ jobs:
           retention-days: 1
       - name: Verify Android web asset preparation
         run: node scripts/prepare-android.mjs && test -f www/index.html && test -f www/timeline.html && test -f www/vendor/three.module.js && test -f www/vendor/addons/controls/OrbitControls.js && test -f www/vendor/THREE-LICENSE.txt
+      - name: Validate Android 3D JavaScript modules
+        run: |
+          node --input-type=module -e 'const THREE = await import("./www/vendor/three.module.js"); if (!THREE.Scene || !THREE.WebGLRenderer) throw new Error("Three.js exports missing"); console.log("Android Three.js module imports successfully.")'
+          node --check www/vendor/three.module.js
+          node --check www/vendor/addons/controls/OrbitControls.js
 
   deploy:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
