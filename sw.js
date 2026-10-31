@@ -1,5 +1,5 @@
-const CACHE_NAME = "history-strategy-shell-v6";
-const APP_SHELL = ["./", "./index.html", "./manifest.json", "./icon.svg", "./version.json"];
+const CACHE_NAME = "history-strategy-shell-v7";
+const APP_SHELL = ["./", "./index.html", "./manifest.json", "./icon.svg", "./version.json", "./timeline.html"];
 
 function isCacheableStaticAsset(url) {
   return /\.(?:js|mjs|css|svg|png|webp|ico|woff2?)$/i.test(url.pathname)
