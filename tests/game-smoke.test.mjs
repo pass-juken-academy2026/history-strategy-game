@@ -246,7 +246,7 @@ test("god-view mode uses real-time 3D and preserves the two distinct mode rules"
   assert.ok(!/innerHTML\\s*=/.test(timeline), "dynamic labels should not use innerHTML");
   assert.ok(timeline.includes('id="saveButton"') && timeline.includes('id="loadButton"'), "manual save/load controls are required");
   assert.ok(timeline.includes("slotKey(slot)") && timeline.includes("slot>5"), "five local save slots are required");
-  assert.ok(timeline.includes("draggingBlock=selectedBlockMesh") && timeline.includes("selectedBlockMesh.scale.multiplyScalar"), "placed blocks must be draggable and resizable");
+  assert.ok(timeline.includes("draggingBlock=selectedBlockMesh") && timeline.includes("selectedBlockMesh.scale.set"), "placed blocks must be draggable and resizable");
   assert.ok(timeline.includes("アカウント登録・ログイン・個人情報入力は不要"), "prototype must disclose local no-login operation");
   assert.ok(timeline.includes("let autoFlow=false;let autoTimer=null;let activeSlot=1;let quality="), "settings state should be initialized");
   const moduleScript = timeline.match(/<script type="module">([\s\S]*?)<\/script>/i);
