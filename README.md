@@ -51,3 +51,10 @@ cd android
 - [自動化100案ロードマップ](ROADMAP_100.md)
 
 オンライン機能や外部通知は、対応するサーバー・サービス・認証情報が必要です。GitHubにコードを追加したことだけでは、これらの機能が稼働していることにはなりません。
+
+
+## ウェブ公開の確認
+
+- [GitHub Actions の実行履歴](https://github.com/pass-juken-academy2026/history-strategy-game/actions)で、最新の「Test and deploy web game」の `test` と `deploy` が両方成功していることを確認します。
+- [GitHub Pages の設定](https://github.com/pass-juken-academy2026/history-strategy-game/settings/pages)に表示される「Visit site」から公開URLを開きます。公開URLは、実際にPagesが有効化されデプロイが成功するまでは公開済みと扱いません。
+- 公開後はスマートフォンとPCでゲーム開始、CPU難易度選択、ターン進行、セーブ・再開、更新後の表示を確認します。
