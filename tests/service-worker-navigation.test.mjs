@@ -14,7 +14,7 @@ test("offline navigation caches each page under its own request URL", () => {
     "a different page must not overwrite the offline homepage cache entry"
   );
   assert.ok(
-    serviceWorker.includes('(await caches.match(request)) || (await caches.match("./index.html"))'),
+    serviceWorker.includes("const cachedExact = await caches.match(request);") && serviceWorker.includes('return (await caches.match("./index.html")) || new Response('),
     "offline navigation should try its own cached page before falling back to the homepage"
   );
 });
