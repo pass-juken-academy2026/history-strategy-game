@@ -22,7 +22,7 @@
  <div class="stars"></div><div class="sun"></div><div class="terrain"></div><div class="timeline-line"></div>
  <div class="era" style="left:12%"><strong>古代</strong><small>〜500年</small></div><div class="era" style="left:37%"><strong>中世</strong><small>500〜1500年</small></div><div class="era" style="left:62%"><strong>近世・近代</strong><small>1500〜1900年</small></div><div class="era" style="left:87%"><strong>現代</strong><small>1900年〜</small></div>
  <div class="landmark ancient"><span class="art">🏛️</span><strong>古代文明</strong></div><div class="landmark middle"><span class="art">🏰</span><strong>中世の都市</strong></div><div class="landmark early"><span class="art">⛵</span><strong>大航海時代</strong></div><div class="landmark modern"><span class="art">🏙️</span><strong>現代都市</strong></div>
- <div class="eventpin" style="left:20%">📜 古代の法と政治</div><div class="eventpin" style="left:47%">📚 印刷技術の普及</div><div class="eventpin" style="left:74%">⚙️ 産業革命</div>
+ <div class="eventpin" style="left:13%;top:70%">🏛️ カエサルと共和政末期</div><div class="eventpin" style="left:31%;top:73%">📖 紫式部と『源氏物語』</div><div class="eventpin" style="left:48%;top:69%">📚 グーテンベルクと印刷</div><div class="eventpin" style="left:65%;top:73%">⚖️ ナポレオン時代</div><div class="eventpin" style="left:81%;top:68%">⚙️ 産業革命・科学研究</div>
  <div id="placedBlocks"></div>
  <div class="scene-footer"><span class="glass" id="yearLabel">年代：古代</span><span class="glass" id="placedLabel">配置ブロック：0</span><span class="glass" id="flowLabel">歴史の安定度：100%</span></div>
 </section>
@@ -36,11 +36,11 @@
 (()=>{'use strict';
 const $=id=>document.getElementById(id);
 const eras=[
- {name:'古代',year:'紀元前〜500年',person:'古代文明と法の形成',desc:'メソポタミア、古代エジプト、ギリシャ、ローマなどで都市・法・政治思想が発展。',icon:'🏛️',event:'法と政治の制度が形づくられた。'},
- {name:'中世',year:'500〜1500年',person:'大学と知識の継承',desc:'各地で交易・宗教・学問が交差し、都市や大学が発展。',icon:'🏰',event:'学問と交易のネットワークが広がった。'},
- {name:'近世',year:'1500〜1800年',person:'グーテンベルクと印刷技術',desc:'印刷技術の普及は知識の伝達を変え、宗教・科学・政治の議論を広げた。',icon:'📚',event:'印刷物を通じて知識が広く共有された。'},
- {name:'近代',year:'1800〜1900年',person:'産業革命と社会の変化',desc:'機械化、工場、鉄道などが生産や暮らしを大きく変えた。',icon:'⚙️',event:'産業化が社会構造を変えた。'},
- {name:'現代',year:'1900年〜',person:'科学・国際協力・情報社会',desc:'科学技術、国際機関、情報通信が世界のつながり方を変えてきた。',icon:'🌐',event:'社会は技術と国際協力を通じて変化し続ける。'}
+ {name:'古代',year:'紀元前〜500年',person:'ユリウス・カエサルと共和政末期',desc:'古代ローマではカエサルの台頭などを経て共和政から帝政への移行が進んだ。古代文明の法や政治制度は後世にも影響した。',icon:'🏛️',event:'ローマの政治体制が大きく変化した。'}, 
+ {name:'中世',year:'500〜1500年',person:'紫式部と『源氏物語』',desc:'平安時代の宮廷文化を伝える『源氏物語』は、紫式部による長編物語として日本文学史に残る。世界各地で学問や交易も発展した。',icon:'🏰',event:'文学・学問・交易が文化の継承を支えた。'}, 
+ {name:'近世',year:'1500〜1800年',person:'グーテンベルクと印刷技術',desc:'15世紀ヨーロッパで活版印刷が普及し、書物や情報の流通に大きな変化が起きた。各地域で異なる文化・知識の交流が進んだ。',icon:'📚',event:'印刷技術が知識の伝達を大きく変えた。'}, 
+ {name:'近代',year:'1800〜1900年',person:'ナポレオン時代と産業革命',desc:'ナポレオン時代の欧州では政治・法制度が再編され、産業革命は生産・交通・労働のあり方を変えていった。',icon:'⚙️',event:'政治制度と産業化が社会を変えた。'}, 
+ {name:'現代',year:'1900年〜',person:'マリー・キュリーと科学の発展',desc:'キュリーの放射能研究などを含む科学の発展は、医療や産業に影響を与えた。現代は情報通信や国際協力も社会を変え続けている。',icon:'🌐',event:'科学研究と国際協力が現代社会を形づくる。'}
 ];
 const disruptBlocks=[
  {id:'delay',icon:'⏳',name:'時間遅延',desc:'事件の進行を遅らせる',effect:12},
