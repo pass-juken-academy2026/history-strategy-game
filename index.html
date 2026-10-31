@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>歴史戦略 — 分岐する年代記</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#151d31;--panel2:#1c2740;--line:#33415e;--text:#eef2ff;--muted:#a8b4ce;--gold:#f6c76b;--red:#f07878;--blue:#79b8ff;--green:#77d6a3}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#1b2b49 0,#0b1020 55%);color:var(--text);font:15px/1.55 system-ui,-apple-system,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif}button,select{font:inherit}button{border:1px solid var(--line);border-radius:10px;padding:10px 13px;color:var(--text);background:#263450;cursor:pointer;transition:.15s}button:hover:not(:disabled){filter:brightness(1.15);transform:translateY(-1px)}button:disabled{opacity:.38;cursor:not-allowed}.primary{background:linear-gradient(135deg,#b88736,#e5b75d);color:#17130b;border:0;font-weight:800}.danger{background:#522d3b}.wrap{max-width:1120px;margin:auto;padding:22px}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}.brand{font-size:clamp(22px,4vw,34px);font-weight:900;letter-spacing:.04em}.brand span{color:var(--gold)}.eyebrow{font-size:11px;letter-spacing:.18em;color:var(--gold);font-weight:800}.muted{color:var(--muted)}.panel{background:linear-gradient(145deg,#17223aee,#11192bea);border:1px solid var(--line);border-radius:16px;padding:17px;box-shadow:0 12px 32px #0002}.setup{margin:20px 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}.field select{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;background:#0e172a;color:var(--text)}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}.stat{background:#10192b;border:1px solid var(--line);border-radius:12px;padding:12px}.stat small{display:block;color:var(--muted)}.stat strong{font-size:24px}.layout{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.sectionhead h2{font-size:17px;margin:0}.map{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.region{min-height:104px;text-align:left;background:linear-gradient(145deg,#253452,#17233a);padding:11px;position:relative}.region .emoji{font-size:22px}.region strong{display:block;margin:3px 0}.region small{color:var(--muted)}.region.owned{border-color:var(--gold);box-shadow:inset 0 0 0 1px #f6c76b55}.region.enemy{border-color:#a35b72}.region.selected{outline:2px solid var(--blue)}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 8px;font-size:11px;color:var(--muted)}.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}.actions button{text-align:left;min-height:60px}.actions b{display:block}.actions small{display:block;color:#c1cbe0;font-size:11px}.log{display:flex;flex-direction:column;gap:8px;max-height:245px;overflow:auto}.logitem{border-left:3px solid var(--gold);background:#0e1728;padding:9px 11px;border-radius:0 9px 9px 0;font-size:13px}.logitem.red{border-color:var(--red)}.logitem.green{border-color:var(--green)}.turnbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.banner{border-radius:12px;padding:12px 14px;background:#332d20;border:1px solid #75613a;color:#ffdfa0;margin:12px 0}.banner.hidden{display:none}.rules{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.rules h3{margin:0 0 6px}.rules p{margin:0;color:var(--muted);font-size:13px}.footer{text-align:center;color:#75819a;font-size:12px;padding:24px}.hidden{display:none!important}@media(max-width:760px){.wrap{padding:13px}.setup{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,1fr)}.layout{grid-template-columns:1fr}.map{gap:6px}.region{padding:8px;min-height:100px}.rules{grid-template-columns:1fr}.brand{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top"><div><div class="eyebrow">ALTERNATE HISTORY STRATEGY</div><div class="brand">歴史戦略 <span>— 分岐する年代記</span></div><div class="muted">一手ごとに、歴史の行方が変わる。</div></div><button id="newGame" class="primary">↻ 新しいゲーム</button></header>
+<section class="panel setup" aria-label="ゲーム設定">
+ <div class="field"><label for="mode">ゲームモード</label><select id="mode"><option value="cpu">CPU対戦</option><option value="local">2人対戦（同じ端末）</option></select></div>
+ <div class="field"><label for="side">自分の陣営</label><select id="side"><option value="disrupt">妨害派</option><option value="restore">史実派</option></select></div>
+ <div class="field"><label for="difficulty">CPUの強さ</label><select id="difficulty"><option value="easy">初級</option><option value="normal" selected>標準</option><option value="hard">上級</option></select></div>
+ <div class="field"><label for="goal">勝利目標</label><select id="goal"><option value="standard">標準（歴史ポイント）</option><option value="territory">領土優勢</option></select></div>
+</section>
+<div id="onlineNotice" class="banner">オンライン対戦はこの版では未接続です。インターネット越しの対戦には、マッチングと同期を行うサーバーの追加が必要です。</div>
+<section class="stats" aria-label="戦況">
+ <div class="stat"><small>ターン / 年代</small><strong id="turnStat">1 / 1900</strong></div>
+ <div class="stat"><small>歴史安定度</small><strong id="stabilityStat">70%</strong></div>
+ <div class="stat"><small>妨害派の歴史点</small><strong id="disruptScore">0</strong></div>
+ <div class="stat"><small>史実派の歴史点</small><strong id="restoreScore">0</strong></div>
+</section>
+<div id="status" class="banner">陣営を選び、地域を選択して行動しよう。</div>
+<main class="layout">
+ <section class="panel">
+  <div class="sectionhead"><h2>🗺️ 戦略マップ</h2><span class="pill" id="mapHint">地域を選択</span></div>
+  <div id="map" class="map" aria-label="地域マップ"></div>
+  <div class="sectionhead" style="margin-top:17px"><h2>⚔️ 行動</h2><span class="pill" id="activeSide">妨害派のターン</span></div>
+  <div class="muted" id="selectedDescription">マップから地域を選んでください。</div>
+  <div class="actions">
+   <button id="recruit"><b>🛡️ 兵力を増強</b><small>食料2・資金2 → 兵力+3</small></button>
+   <button id="develop"><b>🏗️ 地域を開発</b><small>資金3 → 資金収入と防衛力を強化</small></button>
+   <button id="diplomacy"><b>🤝 外交交渉</b><small>資金2 → 安定度を回復</small></button>
+   <button id="mission"><b>🌀 歴史工作</b><small>妨害派専用・歴史点を獲得</small></button>
+   <button id="protect"><b>📜 史実を保護</b><small>史実派専用・安定度と歴史点</small></button>
+   <button id="endTurn" class="primary"><b>⏭️ ターン終了</b><small>収入・歴史イベントを進める</small></button>
+  </div>
+ </section>
+ <aside class="panel">
+  <div class="sectionhead"><h2>📊 陣営の状況</h2><span class="pill" id="roundLabel">第1ターン</span></div>
+  <div class="stats" style="grid-template-columns:repeat(2,1fr)">
+   <div class="stat"><small>兵力</small><strong id="troops">12</strong></div>
+   <div class="stat"><small>資金</small><strong id="gold">8</strong></div>
+   <div class="stat"><small>食料</small><strong id="food">8</strong></div>
+   <div class="stat"><small>支配地域</small><strong id="territories">2</strong></div>
+  </div>
+  <div class="sectionhead" style="margin-top:14px"><h2>📖 年代記ログ</h2><button id="clearLog">ログ消去</button></div>
+  <div id="log" class="log" aria-live="polite"></div>
+  <div class="rules">
+   <div><h3 style="color:var(--red)">妨害派</h3><p>歴史工作で安定度を下げ、歴史点を獲得。地域の支配と兵力も重要。</p></div>
+   <div><h3 style="color:var(--blue)">史実派</h3><p>史実保護で安定度を回復し、重要地域を守って歴史点を獲得。</p></div>
+  </div>
+ </aside>
+</main>
+<div class="footer">架空の歴史戦略ゲーム試作版 · 進行状況はこの端末の画面内のみ · オンライン対戦は未実装</div>
+</div>
+<script>
+(()=>{
+'use strict';
+const $=id=>document.getElementById(id);
+const regionsSeed=[
+ {id:0,name:'北方圏',emoji:'❄️',owner:'restore',troops:5,dev:1,desc:'資源に恵まれた北の地域。'},
+ {id:1,name:'中央圏',emoji:'🏛️',owner:'restore',troops:7,dev:2,desc:'政治の中心。開発効果が高い。'},
+ {id:2,name:'東方圏',emoji:'🌅',owner:'disrupt',troops:4,dev:1,desc:'交易路が集まる東の地域。'},
+ {id:3,name:'西方圏',emoji:'🏰',owner:'disrupt',troops:5,dev:1,desc:'要衝を押さえる西の地域。'},
+ {id:4,name:'南方圏',emoji:'🌴',owner:'neutral',troops:3,dev:0,desc:'成長の余地が大きい南の地域。'},
+ {id:5,name:'島嶼圏',emoji:'⛵',owner:'neutral',troops:2,dev:0,desc:'海上交通の鍵となる地域。'}
+];
+let g,selected=1,gameOver=false,logEntries=[];
+const names={disrupt:'妨害派',restore:'史実派',neutral:'中立'};
+const years=[1900,1905,1910,1914,1918,1925,1930,1939,1945,1950,1960,1970];
+function start(){g={turn:1,year:1900,stability:70,score:{disrupt:0,restore:0},players:{disrupt:{troops:12,gold:8,food:8},restore:{troops:12,gold:8,food:8}},regions:regionsSeed.map(x=>({...x})),active:'disrupt',mode:$('mode').value,playerSide:$('side').value,difficulty:$('difficulty').value,goal:$('goal').value};selected=1;gameOver=false;logEntries=[];$('status').textContent='ゲーム開始！地域を選び、行動を選択してください。';$('onlineNotice').classList.toggle('hidden',false);$('onlineNotice').textContent='オンライン対戦はこの版では未接続です。インターネット越しの対戦には、マッチングと同期を行うサーバーの追加が必要です。';log('新しい年代記が始まった。妨害派と史実派、どちらが未来を導くのか。');render();}
+function log(t,type=''){logEntries.unshift({t,type,turn:g.turn});logEntries=logEntries.slice(0,35);renderLog();}
+function current(){return g.players[g.active]}
+function region(){return g.regions.find(r=>r.id===selected)}
+function ownedCount(side){return g.regions.filter(r=>r.owner===side).length}
+function render(){renderMap();renderStats();renderLog();$('activeSide').textContent=names[g.active]+'のターン';$('roundLabel').textContent='第'+g.turn+'ターン';$('mapHint').textContent=region().name+'を選択中';$('selectedDescription').textContent=region().desc+' 支配：'+names[region().owner]+'／兵力：'+region().troops+'／開発：'+region().dev;$('status').textContent=gameOver?$('status').textContent:(g.mode==='cpu'&&g.active!==g.playerSide?'CPUが考えています…':names[g.active]+'の行動を選んでください。');const isCpu=g.mode==='cpu'&&g.active!==g.playerSide;for(const id of ['recruit','develop','diplomacy','mission','protect','endTurn'])$(id).disabled=gameOver||isCpu; $('mission').disabled=$('mission').disabled||g.active!=='disrupt';$('protect').disabled=$('protect').disabled||g.active!=='restore';$('onlineNotice').classList.toggle('hidden',true);}
+function renderMap(){$('map').innerHTML='';g.regions.forEach(r=>{const b=document.createElement('button');b.className='region '+(r.owner===g.active?'owned':r.owner!== 'neutral'?'enemy':'')+(r.id===selected?' selected':'');b.innerHTML='<span class="emoji">'+r.emoji+'</span><strong>'+r.name+'</strong><small>'+names[r.owner]+' · 兵力 '+r.troops+'<br>開発 '+r.dev+'</small>';b.onclick=()=>{selected=r.id;renderMap();$('mapHint').textContent=r.name+'を選択中';$('selectedDescription').textContent=r.desc+' 支配：'+names[r.owner]+'／兵力：'+r.troops+'／開発：'+r.dev};$('map').appendChild(b)})}
+function renderStats(){const p=current();$('turnStat').textContent=g.turn+' / '+g.year;$('stabilityStat').textContent=g.stability+'%';$('disruptScore').textContent=g.score.disrupt;$('restoreScore').textContent=g.score.restore;$('troops').textContent=p.troops;$('gold').textContent=p.gold;$('food').textContent=p.food;$('territories').textContent=ownedCount(g.active)}
+function renderLog(){$('log').innerHTML=logEntries.map(e=>'<div class="logitem '+e.type+'"><span class="muted">T'+e.turn+' · </span>'+escapeHtml(e.t)+'</div>').join('')}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function spend(gold,food){const p=current();if(p.gold<gold||p.food<food){$('status').textContent='資金または食料が足りません。開発やターン終了で収入を確保しよう。';return false}p.gold-=gold;p.food-=food;return true}
+function recruit(){if(!spend(2,2))return;current().troops+=3;log(names[g.active]+'は兵力を3増強した。','green');afterAction()}
+function develop(){if(!spend(3,0))return;const r=region();r.dev++;if(r.owner==='neutral')r.owner=g.active;log(names[g.active]+'は'+r.name+'を開発した。開発レベル '+r.dev+'。','green');afterAction()}
+function diplomacy(){if(!spend(2,0))return;g.stability=Math.min(100,g.stability+(g.active==='restore'?12:5));g.score[g.active]+=1;log(names[g.active]+'は外交交渉を行い、安定度を調整した。','green');afterAction()}
+function mission(){if(g.active!=='disrupt')return;const r=region();g.stability=Math.max(0,g.stability-(7+r.dev));g.score.disrupt+=3+(r.owner==='restore'?2:0);current().gold+=1;log('妨害派は'+r.name+'で歴史工作を行った。歴史点を獲得。','red');afterAction()}
+function protect(){if(g.active!=='restore')return;const r=region();g.stability=Math.min(100,g.stability+9+r.dev);g.score.restore+=3+(r.owner==='disrupt'?1:0);log('史実派は'+r.name+'の史実保護を行い、安定度を回復した。','green');afterAction()}
+function attack(){const r=region(),p=current();if(r.owner===g.active){$('status').textContent='自陣営の地域です。別の地域を選択してね。';return}if(p.troops<4){$('status').textContent='攻勢には兵力4以上が必要です。兵力を増強しよう。';return}p.troops-=4;const power=4+Math.floor(Math.random()*5)+(g.difficulty==='hard'?1:0);if(power>=r.troops+r.dev){const old=r.owner;r.owner=g.active;r.troops=Math.max(1,power-r.troops);g.score[g.active]+=3;g.stability=Math.max(0,g.stability-4);log(names[g.active]+'は'+r.name+'を確保した。'+names[old]+'の支配が後退。','green')}else{r.troops=Math.max(1,r.troops-2);log(names[g.active]+'は'+r.name+'への攻勢に失敗。守備側の兵力を削った。','red')}afterAction()}
+function afterAction(){render();checkEnd()}
+function endTurn(){if(gameOver)return;const p=current();p.gold+=2+ownedCount(g.active)+g.regions.reduce((a,r)=>a+(r.owner===g.active?r.dev:0),0);p.food+=2+Math.floor(ownedCount(g.active)/2);if(g.active==='restore'&&g.stability<100)g.stability=Math.min(100,g.stability+2);const was=g.active;g.active=g.active==='disrupt'?'restore':'disrupt';if(was==='restore'){g.turn++;g.year=years[Math.min(g.turn-1,years.length-1)];event();}render();checkEnd();if(!gameOver&&g.mode==='cpu'&&g.active!==g.playerSide)setTimeout(cpuTurn,550)}
+function event(){const events=[()=>{g.stability=Math.max(0,g.stability-5);log('年代記イベント：国際的な緊張が高まり、安定度が5低下。','red')},()=>{g.players.restore.gold+=2;g.stability=Math.min(100,g.stability+4);log('年代記イベント：協力体制が強まり、史実派に資金と安定度が加わった。','green')},()=>{g.players.disrupt.food+=2;log('年代記イベント：物流の混乱で妨害派に食料が流入。')},()=>{const r=g.regions[Math.floor(Math.random()*g.regions.length)];r.dev++;log('年代記イベント：'+r.name+'で技術革新が起き、開発レベルが上昇。','green')}];events[Math.floor(Math.random()*events.length)]()}
+function checkEnd(){if(g.stability<=0){finish('disrupt','歴史安定度が0になった。妨害派が歴史の分岐を実現した。');return}if(g.stability>=100&&g.score.restore>=12){finish('restore','歴史安定度が最大に達し、史実派が歴史を守り抜いた。');return}if(g.goal==='territory'&&(ownedCount('disrupt')>=5||ownedCount('restore')>=5)){finish(ownedCount('disrupt')>=5?'disrupt':'restore','一方の陣営が5地域を支配した。');return}if(g.turn>=12){const winner=g.score.disrupt===g.score.restore?(ownedCount('disrupt')>ownedCount('restore')?'disrupt':'restore'):(g.score.disrupt>g.score.restore?'disrupt':'restore');finish(winner,'最終ターン終了。歴史点と支配地域で勝敗を判定した。')}}
+function finish(winner,why){gameOver=true;$('status').textContent='🏆 '+names[winner]+'の勝利！ '+why;log('ゲーム終了：'+names[winner]+'の勝利。','green');render();$('status').textContent='🏆 '+names[winner]+'の勝利！ '+why}
+function cpuTurn(){if(gameOver||g.mode!=='cpu'||g.active===g.playerSide)return;const p=current(),enemySide=g.active;const enemy=g.regions.filter(r=>r.owner!==enemySide).sort((a,b)=>a.troops+a.dev-(b.troops+b.dev))[0];if(enemy&&p.troops>=8&&Math.random()>(g.difficulty==='easy'?.7:g.difficulty==='hard'?.25:.45)){selected=enemy.id;attack()}else if(enemySide==='disrupt'&&g.stability>30&&Math.random()>.25){selected=enemy?enemy.id:selected;mission()}else if(enemySide==='restore'&&g.stability<95){selected=1;protect()}else if(p.troops<10&&p.food>=2&&p.gold>=2)recruit();else if(p.gold>=3)develop();else diplomacy();if(!gameOver)endTurn()}
+function doAttackOrDevelop(){const r=region();if(r.owner!==g.active){attack()}else develop()}
+$('newGame').onclick=start;$('recruit').onclick=recruit;$('develop').onclick=develop;$('diplomacy').onclick=diplomacy;$('mission').onclick=mission;$('protect').onclick=protect;$('endTurn').onclick=endTurn;$('clearLog').onclick=()=>{logEntries=[];renderLog()};$('mode').onchange=()=>{$('onlineNotice').classList.remove('hidden');$('onlineNotice').textContent=$('mode').value==='online'?'オンライン対戦は未接続です。サーバー実装後に利用できます。':'オンライン対戦はこの版では未接続です。インターネット越しの対戦には、マッチングと同期を行うサーバーの追加が必要です。'};$('map').addEventListener('dblclick',()=>{});$('map').addEventListener('keydown',()=>{});$('map').addEventListener('click',e=>{const b=e.target.closest('button.region');if(b&&b.classList.contains('enemy'))$('mapHint').textContent='敵地域：攻勢は兵力4を消費'});
+// Provide an explicit attack control without crowding the action grid.
+const attackButton=document.createElement('button');attackButton.innerHTML='<b>⚔️ 地域へ攻勢</b><small>兵力4を消費して中立・敵地域を狙う</small>';attackButton.onclick=attack;$('protect').parentElement.insertBefore(attackButton,$('endTurn'));
+start();
+})();
+</script>
+</body>
+</html>
