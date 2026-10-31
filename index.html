@@ -75,7 +75,7 @@ const regionsSeed=[
 let g,selected=1,gameOver=false,logEntries=[];
 const names={disrupt:'妨害派',restore:'史実派',neutral:'中立'};
 const years=[1900,1905,1910,1914,1918,1925,1930,1939,1945,1950,1960,1970];
-function start(){g={turn:1,year:1900,stability:70,score:{disrupt:0,restore:0},players:{disrupt:{troops:12,gold:8,food:8},restore:{troops:12,gold:8,food:8}},regions:regionsSeed.map(x=>({...x})),active:'disrupt',mode:$('mode').value,playerSide:$('side').value,difficulty:$('difficulty').value,goal:$('goal').value};selected=1;gameOver=false;logEntries=[];$('status').textContent='ゲーム開始！地域を選び、行動を選択してください。';$('onlineNotice').classList.toggle('hidden',false);$('onlineNotice').textContent='オンライン対戦はこの版では未接続です。インターネット越しの対戦には、マッチングと同期を行うサーバーの追加が必要です。';log('新しい年代記が始まった。妨害派と史実派、どちらが未来を導くのか。');render();}
+function start(){g={turn:1,year:1900,stability:70,score:{disrupt:0,restore:0},players:{disrupt:{troops:12,gold:8,food:8},restore:{troops:12,gold:8,food:8}},regions:regionsSeed.map(x=>({...x})),active:'disrupt',mode:$('mode').value,playerSide:$('side').value,difficulty:$('difficulty').value,goal:$('goal').value};selected=1;gameOver=false;logEntries=[];$('status').textContent='ゲーム開始！地域を選び、行動を選択してください。';$('onlineNotice').classList.toggle('hidden',false);$('onlineNotice').textContent='オンライン対戦はこの版では未接続です。インターネット越しの対戦には、マッチングと同期を行うサーバーの追加が必要です。';log('新しい年代記が始まった。妨害派と史実派、どちらが未来を導くのか。');render();if(g.mode==='cpu'&&g.active!==g.playerSide)setTimeout(cpuTurn,550);}
 function log(t,type=''){logEntries.unshift({t,type,turn:g.turn});logEntries=logEntries.slice(0,35);renderLog();}
 function current(){return g.players[g.active]}
 function region(){return g.regions.find(r=>r.id===selected)}
