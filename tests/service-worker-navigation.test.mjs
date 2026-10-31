@@ -111,7 +111,7 @@ test("service worker install only activates after every required asset is cached
     const cache = { put: async (key, response) => { stored.push(String(key)); } };
     const context = {
       URL,
-      Request,
+      Request: class MockRequest { constructor(url, options = {}) { this.url = new URL(String(url), "https://game.example/").href; this.cache = options.cache; } },
       Response,
       Promise,
       Error,
