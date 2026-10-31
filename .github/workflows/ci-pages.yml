@@ -70,3 +70,15 @@ jobs:
       - name: Deploy only after tests pass
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Smoke-test deployed 3D page and local assets
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          base="${PAGE_URL%/}"
+          curl --fail --silent --show-error --retry 10 --retry-delay 5 "$base/timeline.html" -o /tmp/timeline.html
+          grep -F '"three":"./vendor/three.module.js"' /tmp/timeline.html
+          curl --fail --silent --show-error "$base/vendor/three.module.js" -o /dev/null
+          curl --fail --silent --show-error "$base/vendor/addons/controls/OrbitControls.js" -o /dev/null
+          curl --fail --silent --show-error "$base/vendor/THREE-LICENSE.txt" -o /dev/null
+          echo "Deployed 3D page and local Three.js assets are reachable."
