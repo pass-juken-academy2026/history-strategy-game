@@ -182,3 +182,53 @@ test("territory victory logic waits for a true majority of the 27-region map", (
   sandbox.checkEnd();
   assert.equal(winner, "restore", "the opposing faction should also be able to win by majority");
 });
+
+test("legacy six-region saves migrate and corrupted primary saves recover from backup", () => {
+  const campaignStart = html.indexOf("const campaignRegions=[");
+  const campaignEnd = html.indexOf("let chosenCampaignRegion=", campaignStart);
+  const loaderStart = html.indexOf("function loadSavedGameData(raw){");
+  const loaderEnd = html.indexOf("\nfunction log(", loaderStart);
+  assert.ok(campaignStart >= 0 && campaignEnd > campaignStart);
+  assert.ok(loaderStart >= 0 && loaderEnd > loaderStart);
+  const elements = {};
+  const stored = {};
+  const sandbox = {
+    regionsSeed: Array.from({length: 6}, (_, id) => ({
+      id, name: "seed-" + id, emoji: "x", owner: "neutral", troops: 2, dev: 0, desc: "seed"
+    })),
+    localStorage: {
+      getItem(key) { return stored[key] ?? null; },
+      setItem(key, value) { stored[key] = value; }
+    },
+    $(id) { return elements[id] || (elements[id] = {textContent: ""}); },
+    render() {},
+    saveGame() {},
+    cpuTurn() {},
+    setTimeout() {}
+  };
+  const setup = html.slice(campaignStart, campaignEnd);
+  const loaders = html.slice(loaderStart, loaderEnd);
+  vm.runInNewContext(setup + "\n" + loaders + "\nglobalThis.__loadSavedGame=loadSavedGame;", sandbox);
+  const legacy = {
+    g: {
+      campaignRegion: "北アメリカ", turn: 2, year: 1905, stability: 70,
+      score: {disrupt: 1, restore: 2},
+      players: {disrupt: {troops: 12, gold: 8, food: 8}, restore: {troops: 12, gold: 8, food: 8}},
+      regions: Array.from({length: 6}, (_, id) => ({id, owner: id === 0 ? "restore" : "neutral", troops: id === 0 ? 5 : 2, dev: id === 0 ? 2 : 0})),
+      active: "disrupt", mode: "local", playerSide: "restore", difficulty: "normal", goal: "standard"
+    },
+    selected: 0, gameOver: false, logEntries: []
+  };
+  const serialized = JSON.stringify(legacy);
+  assert.equal(sandbox.__loadSavedGameData(serialized), true);
+  assert.equal(sandbox.g.regions.length, 27);
+  assert.equal(sandbox.g.regions[0].name, "北アメリカ");
+  assert.equal(sandbox.g.regions[0].troops, 5);
+  assert.equal(sandbox.g.regions[0].dev, 2);
+
+  stored["history-strategy-save-v1"] = "{broken json";
+  stored["history-strategy-save-backup-v1"] = serialized;
+  assert.equal(sandbox.__loadSavedGame(), true);
+  assert.equal(sandbox.g.regions.length, 27);
+  assert.match(elements.saveNotice.textContent, /バックアップから復元/);
+});
