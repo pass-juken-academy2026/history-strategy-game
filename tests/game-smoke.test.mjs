@@ -244,4 +244,9 @@ test("god-view mode uses real-time 3D and preserves the two distinct mode rules"
   assert.ok(timeline.includes("ローカルの試作対戦で、オンライン対戦ではありません。"), "prototype must disclose that online play is not implemented");
   assert.ok(timeline.includes("カエサル") && timeline.includes("紫式部") && timeline.includes("ナポレオン"), "historical figures/events should be represented");
   assert.ok(!/innerHTML\\s*=/.test(timeline), "dynamic labels should not use innerHTML");
+  assert.ok(timeline.includes('id="saveButton"') && timeline.includes('id="loadButton"'), "manual save/load controls are required");
+  assert.ok(timeline.includes("slotKey(slot)") && timeline.includes("slot<=5"), "five local save slots are required");
+  assert.ok(timeline.includes("draggingBlock=selectedBlockMesh") && timeline.includes("selectedBlockMesh.scale.multiplyScalar"), "placed blocks must be draggable and resizable");
+  assert.ok(timeline.includes("個人情報・ログインは不要です"), "prototype must disclose local no-login operation");
+  assert.ok(timeline.includes("let autoFlow=false;let autoTimer=null;let activeSlot=1;"), "module declarations must not contain a literal escaped newline");
 });
