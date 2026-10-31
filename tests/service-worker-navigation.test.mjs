@@ -25,3 +25,22 @@ test("service worker shell includes both the home page and 3D timeline", () => {
   assert.ok(shell[1].includes('"./index.html"'), "home page should be precached");
   assert.ok(shell[1].includes('"./timeline.html"'), "3D timeline should be precached");
 });
+
+test("offline navigation retries the cached URL without query parameters", () => {
+  assert.ok(
+    serviceWorker.includes("const offlineUrl = new URL(request.url);"),
+    "offline fallback should normalize the requested URL"
+  );
+  assert.ok(
+    serviceWorker.includes("offlineUrl.search = \"\";"),
+    "offline fallback should ignore cache-busting query strings"
+  );
+  assert.ok(
+    serviceWorker.includes("const cachedWithoutQuery = await caches.match(offlineUrl.href);"),
+    "offline fallback should try the normalized URL"
+  );
+  assert.ok(
+    serviceWorker.includes("このページはまだオフライン用に保存されていません。"),
+    "missing cached pages should return a clear explanation instead of an unrelated page"
+  );
+});
