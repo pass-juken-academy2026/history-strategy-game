@@ -60,11 +60,11 @@ test("campaign selection changes the playable map and starting resources", () =>
   assert.notEqual(asia.mapNames[0], america.mapNames[0]);
   assert.notDeepEqual({...asia.bonus}, {...america.bonus});
   const map = sandbox.__makeCampaignMap("北アメリカ", "disrupt");
-  assert.equal(map.length, 6);
+  assert.equal(map.length, 27);
   assert.equal(map[0].name, "北アメリカ");
   assert.equal(map[0].owner, "disrupt");
-  assert.equal(map.filter(r => r.owner === "disrupt").length, 2);
-  assert.equal(map.filter(r => r.owner === "restore").length, 2);
+  assert.equal(map.filter(r => r.owner === "disrupt").length, 9);
+  assert.equal(map.filter(r => r.owner === "restore").length, 9);
 });
 
 
@@ -83,11 +83,11 @@ test("all campaign choices have a six-region profile and balanced starting owner
     const setup = sandbox.__campaignSetupFor(item.name);
     const map = sandbox.__makeCampaignMap(item.name, "restore");
     assert.equal(setup.mapNames.length, 6, item.name + " map should have six labels");
-    assert.equal(map.length, 6, item.name + " map should have six regions");
-    assert.equal(map[0].name, item.name);
-    assert.equal(map.filter(r => r.owner === "restore").length, 2);
-    assert.equal(map.filter(r => r.owner === "disrupt").length, 2);
-    assert.equal(map.filter(r => r.owner === "neutral").length, 2);
+    assert.equal(map.length, 27, item.name + " map should include all 27 campaign regions");
+    assert.equal(map.find(r => r.name === item.name)?.owner, "restore");
+    assert.equal(map.filter(r => r.owner === "restore").length, 9);
+    assert.equal(map.filter(r => r.owner === "disrupt").length, 9);
+    assert.equal(map.filter(r => r.owner === "neutral").length, 9);
   }
 });
 
