@@ -17,7 +17,7 @@ test("historical timeline distinguishes historical summaries from fictional alte
   assert.ok(html.includes('id="historyCompare"'));
   assert.ok(html.includes("【史実の要約】"));
   assert.ok(html.includes("【ゲーム内の架空分岐】"));
-  assert.ok(html.includes("Julius Caesar") || html.includes("Julius Caesar") || html.includes("ユリウス・カエサル"));
+  assert.ok(html.includes("Julius Caesar") || html.includes("ユリウス・カエサル"));
   assert.ok(html.includes("ノーベル賞公式サイト"));
   assert.ok(html.includes("altered:'架空の分岐"));
 });
