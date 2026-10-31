@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import vm from "node:vm";
 
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+const serviceWorker = await readFile(new URL("../sw.js", import.meta.url), "utf8");
 
 test("inline game JavaScript parses", () => {
   const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/gi)];
@@ -51,4 +52,12 @@ test("saved-game loader bounds input and validates saved state", () => {
   assert.ok(loader[0].includes("raw.length>100000"), "saved data size should be bounded");
   assert.ok(loader[0].includes("Number.isFinite"), "numeric values should be validated");
   assert.ok(loader[0].includes("checkedRegions"), "region state should be rebuilt from trusted templates");
+});
+
+test("service worker only caches known static assets and avoids private/no-store responses", () => {
+  assert.ok(serviceWorker.includes("function isCacheableStaticAsset(url)"));
+  assert.ok(serviceWorker.includes("if (!isCacheableStaticAsset(url))"));
+  assert.ok(serviceWorker.includes("no-store|private"));
+  assert.ok(serviceWorker.includes('response.headers.has("Set-Cookie")'));
+  assert.ok(serviceWorker.includes("Unknown same-origin URLs are fetched but never stored"));
 });
