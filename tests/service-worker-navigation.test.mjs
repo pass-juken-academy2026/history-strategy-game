@@ -72,7 +72,7 @@ test("3D timeline uses local Three.js imports and build scripts bundle dependenc
 test("service worker precaches local Three.js dependencies", () => {
   assert.ok(serviceWorker.includes('"./vendor/three.module.js"'), "Three.js should be in app shell cache");
   assert.ok(serviceWorker.includes('"./vendor/addons/controls/OrbitControls.js"'), "OrbitControls should be in app shell cache");
-  assert.ok(serviceWorker.includes("history-strategy-shell-v9"), "vendor cache update should invalidate old shell");
+  assert.ok(serviceWorker.includes("history-strategy-shell-v10"), "vendor cache update should invalidate old shell");
 });
 
 
@@ -85,4 +85,18 @@ test("both build scripts verify bundled 3D assets in CI", async () => {
   for (const path of ["www/timeline.html", "www/vendor/three.module.js", "www/vendor/addons/controls/OrbitControls.js", "www/vendor/THREE-LICENSE.txt"]) {
     assert.ok(workflow.includes(path), "CI should verify Android asset " + path);
   }
+});
+
+
+test("service worker does not activate with an incomplete offline app shell", () => {
+  assert.ok(serviceWorker.includes("if (!isSafeToCache(response))"), "required shell responses must be checked");
+  assert.ok(serviceWorker.includes("Required offline asset could not be cached"), "failed required assets should fail installation clearly");
+  assert.ok(serviceWorker.includes("await cache.put(path, response);"), "each required shell asset must be stored before activation");
+  assert.ok(!/APP_SHELL\.map\(async path => \{\s*try\s*\{/.test(serviceWorker), "shell failures must not be silently swallowed");
+});
+
+test("service worker cache version changes when the required app shell changes", () => {
+  assert.ok(serviceWorker.includes('const CACHE_NAME = "history-strategy-shell-v10"'));
+  assert.ok(serviceWorker.includes('"./vendor/three.module.js"'));
+  assert.ok(serviceWorker.includes('"./vendor/addons/controls/OrbitControls.js"'));
 });
