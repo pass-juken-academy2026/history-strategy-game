@@ -43,10 +43,10 @@ test("branch and versus modes remain distinct", () => {
 });
 
 test("save data includes game state and block transforms", () => {
-  assert.match(html, /function persistSave\(\)/);
+  assert.match(html, /function persistSave\(targetKey=AUTOSAVE_KEY\)/);
   assert.match(html, /localStorage\.setItem\(targetKey,JSON\.stringify\(data\)\)/);
   assert.ok(html.includes("blockTransforms:blockMeshes.map"), "block transforms must be saved");
-  assert.match(html, /function restoreSave\(\)/);
+  assert.match(html, /function restoreSave\(key=AUTOSAVE_KEY\)/);
 });
 
 test("quality settings and end-of-timeline result handling exist", () => {
