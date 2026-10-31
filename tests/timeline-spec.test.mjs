@@ -85,3 +85,21 @@ test("block resizing clamps each axis independently instead of changing vector d
   assert.ok(html.includes("selectedBlockMesh.scale.set(bounded(next.x),bounded(next.y),bounded(next.z))"));
   assert.ok(!html.includes("selectedBlockMesh.scale.clampLength(.5,2.5)"), "resize should not use vector-length clamping");
 });
+
+
+test("CPU protection moves are recorded for save, rebuild, and end-of-game scoring", () => {
+  assert.ok(html.includes("placed.push({id:b.id,era:eraIndex,delta:b.delta,source:'cpu'})"), "CPU protection placements must enter the shared placement ledger");
+  assert.ok(html.includes("const protections=placed.filter(p=>restoreBlocks.some(b=>b.id===p.id)).length"), "CPU protection moves must count toward the preservation result");
+  assert.ok(html.includes("x.source!=='cpu'"), "CPU moves must not consume the player's three-placement limit");
+});
+
+test("reset stops auto-advance and returns the timeline to branch mode", () => {
+  const start = html.indexOf("function reset(){");
+  const end = html.indexOf("\\n$('advanceButton')", start);
+  assert.ok(start >= 0 && end > start, "reset function should exist");
+  const reset = html.slice(start, end);
+  assert.ok(reset.includes("clearInterval(autoTimer)"), "reset should stop the active auto-advance timer");
+  assert.ok(reset.includes("autoFlow=false"), "reset should clear auto-advance state");
+  assert.ok(reset.includes("mode='branch'"), "new game should start in branch mode");
+  assert.ok(reset.includes("b.dataset.mode==='branch'"), "mode controls should reflect the reset mode");
+});
