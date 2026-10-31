@@ -95,7 +95,7 @@ test("CPU protection moves are recorded for save, rebuild, and end-of-game scori
 
 test("reset stops auto-advance and returns the timeline to branch mode", () => {
   const start = html.indexOf("function reset(){");
-  const end = html.indexOf("\\n$('advanceButton')", start);
+  const end = html.indexOf("$('advanceButton')", start);
   assert.ok(start >= 0 && end > start, "reset function should exist");
   const reset = html.slice(start, end);
   assert.ok(reset.includes("clearInterval(autoTimer)"), "reset should stop the active auto-advance timer");
