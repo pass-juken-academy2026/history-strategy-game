@@ -173,7 +173,7 @@ test("territory victory logic waits for a true majority of the 27-region map", (
   vm.runInNewContext(source, sandbox);
   sandbox.checkEnd();
   assert.equal(winner, null, "nine starting regions must not trigger a majority victory");
-  state.regions.slice(0, 5).forEach(r => { r.owner = "disrupt"; });
+  state.regions.slice(9, 14).forEach(r => { r.owner = "disrupt"; });
   sandbox.checkEnd();
   assert.equal(winner, "disrupt", "fourteen controlled regions should win");
   winner = null;
