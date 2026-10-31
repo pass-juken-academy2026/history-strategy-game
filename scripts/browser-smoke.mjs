@@ -57,25 +57,37 @@ try {
   const canvas = page.locator("#world3d canvas");
   const bounds = await canvas.boundingBox();
   assert.ok(bounds, "3D canvas should have a browser viewport box");
+  await page.evaluate(() => {
+    window.__placedEventCount = 0;
+    window.addEventListener("history:block-placed", () => { window.__placedEventCount += 1; });
+  });
   let placed = false;
   const placementAttempts = [];
-  for (const [x, y] of [[0.5, 0.48], [0.38, 0.52], [0.62, 0.52], [0.3, 0.42], [0.7, 0.42], [0.5, 0.38], [0.45, 0.58]]) {
-    const px = bounds.x + bounds.width * x;
-    const py = bounds.y + bounds.height * y;
-    const hitTarget = await page.evaluate(({ px, py }) => {
-      const target = document.elementFromPoint(px, py);
-      return { tag: target?.tagName, id: target?.id, isCanvas: target?.tagName === "CANVAS" };
-    }, { px, py });
-    placementAttempts.push({ x, y, ...hitTarget });
-    if (!hitTarget.isCanvas) continue;
-    await page.mouse.click(px, py);
-    await page.waitForTimeout(150);
-    placed = await page.evaluate(() => Object.keys(localStorage).some(k => k.includes("slot-1") && (() => {
-      try { return JSON.parse(localStorage.getItem(k)).placed?.length > 0; } catch { return false; }
-    })()));
-    if (placed) break;
+  const grid = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
+  outer: for (const y of [0.24, 0.28, 0.32, 0.36, 0.4, 0.44, 0.48, 0.52, 0.56, 0.6, 0.64]) {
+    for (const x of grid) {
+      const px = bounds.x + bounds.width * x;
+      const py = bounds.y + bounds.height * y;
+      const hitTarget = await page.evaluate(({ px, py }) => {
+        const target = document.elementFromPoint(px, py);
+        return { tag: target?.tagName, id: target?.id, isCanvas: target?.tagName === "CANVAS" };
+      }, { px, py });
+      if (!hitTarget.isCanvas) continue;
+      await page.mouse.click(px, py);
+      await page.waitForTimeout(45);
+      placed = await page.evaluate(() => Object.keys(localStorage).some(k => k.includes("slot-1") && (() => {
+        try { return JSON.parse(localStorage.getItem(k)).placed?.length > 0; } catch { return false; }
+      })()));
+      if (placed) break outer;
+      if (placementAttempts.length < 12) placementAttempts.push({ x, y, ...hitTarget });
+    }
   }
-  assert.ok(placed, "clicking the 3D world should place and persist a disruption block; attempts=" + JSON.stringify(placementAttempts));
+  const interactionDebug = await page.evaluate(() => ({
+    blockPlacedEvents: window.__placedEventCount,
+    toast: document.querySelector("#toast")?.textContent,
+    savedKeys: Object.keys(localStorage).filter(k => k.includes("slot-1"))
+  }));
+  assert.ok(placed, "clicking the 3D world should place and persist a disruption block; attempts=" + JSON.stringify({ tried: placementAttempts, ...interactionDebug }));
 
   await page.locator("#saveButton").click();
   const saveKey = await page.evaluate(() => Object.keys(localStorage).find(k => k.includes("slot-1")));
