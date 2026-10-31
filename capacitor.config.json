@@ -1,0 +1,7 @@
+{
+  "appId": "jp.passjuken.historystrategy",
+  "appName": "歴史戦略",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": { "androidScheme": "https" }
+}
