@@ -52,3 +52,25 @@ test("website and Android build scripts package the 3D timeline page", async () 
   assert.ok(siteBuilder.includes('"timeline.html"'), "website bundle should include timeline.html");
   assert.ok(androidBuilder.includes('"timeline.html"'), "Android bundle should include timeline.html");
 });
+
+
+test("3D timeline uses local Three.js imports and build scripts bundle dependencies", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const timeline = await readFile(new URL("../timeline.html", import.meta.url), "utf8");
+  const siteBuilder = await readFile(new URL("../scripts/prepare-site.mjs", import.meta.url), "utf8");
+  const androidBuilder = await readFile(new URL("../scripts/prepare-android.mjs", import.meta.url), "utf8");
+  assert.ok(timeline.includes('"three":"./vendor/three.module.js"'), "Three.js import should be local");
+  assert.ok(timeline.includes('"three/addons/":"./vendor/addons/"'), "addons should be local");
+  assert.ok(!timeline.includes("cdn.jsdelivr.net/npm/three@"), "3D page should not depend on the Three.js CDN");
+  for (const [name, builder] of [["website", siteBuilder], ["Android", androidBuilder]]) {
+    assert.ok(builder.includes("node_modules/three/build/three.module.js"), name + " bundle should include Three.js");
+    assert.ok(builder.includes("OrbitControls.js"), name + " bundle should include OrbitControls");
+    assert.ok(builder.includes("THREE-LICENSE.txt"), name + " bundle should include the library license");
+  }
+});
+
+test("service worker precaches local Three.js dependencies", () => {
+  assert.ok(serviceWorker.includes('"./vendor/three.module.js"'), "Three.js should be in app shell cache");
+  assert.ok(serviceWorker.includes('"./vendor/addons/controls/OrbitControls.js"'), "OrbitControls should be in app shell cache");
+  assert.ok(serviceWorker.includes("history-strategy-shell-v9"), "vendor cache update should invalidate old shell");
+});
