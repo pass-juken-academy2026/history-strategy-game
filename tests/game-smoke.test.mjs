@@ -123,14 +123,15 @@ test("map rendering avoids interpreting saved region strings as HTML", () => {
 
 test("saved-game loader bounds input and validates saved state", () => {
   const loader = html.match(/function loadSavedGame\(\)\{[\s\S]*?\nfunction log/);
+  const validator = html.match(/function loadSavedGameData\(raw\)\{[\s\S]*?\nfunction loadSavedGame\(/);
   assert.ok(loader, "saved-game loader should exist");
-  assert.ok(loader[0].includes("raw.length>100000"), "saved data size should be bounded");
+  assert.ok(validator, "saved-game validator should exist");
+  assert.ok(validator[0].includes("raw.length>100000"), "saved data size should be bounded");
   assert.ok(loader[0].includes("loadSavedGameData(primary)"), "primary save should be attempted first");
   assert.ok(loader[0].includes("loadSavedGameData(backup)"), "backup save should be attempted if primary fails");
-  assert.ok(html.includes("function loadSavedGameData(raw)"), "save validation should be reusable for fallback recovery");
   assert.ok(html.indexOf("history-strategy-save-backup-v1',serialized") < html.indexOf("history-strategy-save-v1',serialized"), "backup should be written before primary");
-  assert.ok(loader[0].includes("Number.isFinite"), "numeric values should be validated");
-  assert.ok(loader[0].includes("checkedRegions"), "region state should be rebuilt from trusted templates");
+  assert.ok(validator[0].includes("Number.isFinite"), "numeric values should be validated");
+  assert.ok(validator[0].includes("checkedRegions"), "region state should be rebuilt from trusted templates");
 });
 
 test("service worker only caches known static assets and avoids private/no-store responses", () => {
