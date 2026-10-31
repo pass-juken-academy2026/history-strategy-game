@@ -103,3 +103,16 @@ test("reset stops auto-advance and returns the timeline to branch mode", () => {
   assert.ok(reset.includes("mode='branch'"), "new game should start in branch mode");
   assert.ok(reset.includes("b.dataset.mode==='branch'"), "mode controls should reflect the reset mode");
 });
+
+
+test("versus mode offers persisted CPU difficulty levels with different protection strategies", () => {
+  for (const level of ["easy", "normal", "hard"]) {
+    assert.ok(html.includes('value="' + level + '"'), "missing CPU difficulty " + level);
+  }
+  assert.ok(html.includes('id="cpuDifficultySelect"'), "difficulty should be configurable in settings");
+  assert.ok(html.includes("let cpuDifficulty=\"normal\""), "default difficulty should be balanced");
+  assert.ok(html.includes("cpuDifficulty==='easy'?.45:cpuDifficulty==='hard'?.95:.72"), "difficulty should affect CPU action frequency");
+  assert.ok(html.includes("function chooseCpuProtection()"), "CPU should select protection based on difficulty");
+  assert.ok(html.includes("cpuDifficulty,campaignType,victoryRule") || html.includes("campaignType,victoryRule,cpuDifficulty"), "difficulty should persist in saves");
+  assert.ok(html.includes("cpuDifficulty=['easy','normal','hard'].includes(d.cpuDifficulty)?d.cpuDifficulty:'normal'"), "invalid or old saves should fall back safely");
+});
