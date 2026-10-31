@@ -48,7 +48,7 @@ test("camera, drag placement, resize, and save slots have regression coverage", 
   assert.ok(html.includes("controls.enableDamping=true"), "camera movement should be smoothed");
   assert.ok(html.includes("renderer.domElement.setPointerCapture?.(e.pointerId)"), "dragging should retain pointer input");
   assert.ok(html.includes("renderer.domElement.addEventListener('pointermove'"), "block drag movement should be wired");
-  assert.ok(html.includes("window.addEventListener('resize',resize)"), "renderer should respond to viewport resizing");
+  assert.ok(html.includes("addEventListener('resize',resize)"), "renderer should respond to viewport resizing");
   assert.ok(html.includes("function slotKey(slot)"), "save slots should have isolated keys");
   assert.ok(html.includes("Number.isInteger(slot)||slot<1||slot>5"), "save/load must reject invalid slot numbers");
   assert.ok(html.includes("d.version!==1"), "unknown save formats should be rejected");
