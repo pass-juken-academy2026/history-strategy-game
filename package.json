@@ -1,0 +1,19 @@
+{
+  "name": "history-strategy-game",
+  "version": "1.1.0",
+  "private": true,
+  "description": "歴史の分岐をテーマにしたターン制ストラテジーゲーム",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "check": "node scripts/check-project.mjs",
+    "prepare:android": "node scripts/prepare-android.mjs",
+    "android:init": "npm run prepare:android && cap add android",
+    "android:sync": "npm run prepare:android && cap sync android"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/cli": "^7.0.0",
+    "@capacitor/core": "^7.0.0"
+  }
+}
