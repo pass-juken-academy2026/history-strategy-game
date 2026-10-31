@@ -71,6 +71,11 @@ test("the page clearly identifies online multiplayer as not implemented", () => 
   assert.match(html, /ローカルの試作対戦で、オンライン対戦ではありません/);
 });
 
+test("3D click placement is handled by click events while pointerup only finalizes dragging", () => {
+  assert.match(html, /addEventListener\('click',e=>\{if\(!lastPointerWasDrag\)pickObject\(e\);lastPointerWasDrag=false\}\)/);
+  assert.match(html, /addEventListener\('pointerup',e=>\{const isClick=Boolean\(downPoint/);
+});
+
 test("3D clicks prioritize the nearest object so background era markers cannot steal block placement", () => {
   assert.match(html, /const hit=raycaster\.intersectObjects\(worldGroup\.children,true\)\[0\];if\(hit\?\.object\.userData\.type==='era'\)/);
 });
