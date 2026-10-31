@@ -293,7 +293,7 @@ document.addEventListener('click',e=>{if(!e.target.closest('.start-topbar'))clos
 document.querySelectorAll('#battleMenu [data-mode]').forEach(b=>b.onclick=()=>{const mode=b.dataset.mode;$('mode').value=mode;document.querySelectorAll('#battleMenu [data-mode]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));$('battleMenuButton').textContent=mode==='cpu'?'⚔️ 対戦：CPU ▾':'⚔️ 対戦：2人 ▾';closeSocialMenus()});
 $('startScreen').classList.remove('hidden');
 $('gameApp').classList.add('hidden');
-const APP_VERSION='1.3.1';
+const APP_VERSION='1.4.0';
 $('appVersion').textContent='バージョン '+APP_VERSION;
 $('applyUpdate').onclick=()=>{try{localStorage.setItem('history-strategy-last-version',APP_VERSION)}catch(e){};location.reload()};
 async function checkForUpdates(){try{const response=await fetch('./version.json?ts='+Date.now(),{cache:'no-store'});if(!response.ok)return;const remote=await response.json();if(remote.version&&remote.version!==APP_VERSION){$('updateText').textContent='新しいバージョン '+remote.version+' が利用できます。保存後に更新してください。';$('updateNotice').hidden=false;}}catch(e){}}
