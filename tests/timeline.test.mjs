@@ -43,7 +43,7 @@ test("branch and versus modes remain distinct", () => {
 test("save data includes game state and block transforms", () => {
   assert.match(html, /function persistSave\(\)/);
   assert.match(html, /localStorage\.setItem\(slotKey\(activeSlot\),JSON\.stringify\(data\)\)/);
-  assert.match(html, /blockTransforms:blockMeshes\\.map/);
+  assert.ok(html.includes("blockTransforms:blockMeshes.map"), "block transforms must be saved");
   assert.match(html, /function restoreSave\(\)/);
 });
 
