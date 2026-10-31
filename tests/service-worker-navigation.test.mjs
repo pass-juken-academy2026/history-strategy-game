@@ -108,6 +108,7 @@ test("service worker install only activates after every required asset is cached
     const listeners = new Map();
     const stored = [];
     let skipWaitingCalls = 0;
+    const deletedCaches = [];
     const cache = { put: async (key, response) => { stored.push(String(key)); } };
     const context = {
       URL,
@@ -120,7 +121,7 @@ test("service worker install only activates after every required asset is cached
         addEventListener: (name, handler) => listeners.set(name, handler),
         skipWaiting: async () => { skipWaitingCalls += 1; }
       },
-      caches: { open: async () => cache },
+      caches: { open: async () => cache, delete: async name => { deletedCaches.push(name); return true; } },
       fetch: async request => {
         if (failPath && String(request.url || request).endsWith(failPath)) {
           return { ok: false, type: "basic", headers: { get: () => "", has: () => false } };
@@ -133,15 +134,17 @@ test("service worker install only activates after every required asset is cached
     listeners.get("install")({ waitUntil: promise => { waitUntilPromise = promise; } });
     let error = null;
     try { await waitUntilPromise; } catch (caught) { error = caught; }
-    return { stored, skipWaitingCalls, error };
+    return { stored, skipWaitingCalls, error, deletedCaches };
   }
 
   const success = await runInstall();
   assert.equal(success.error, null, "all successful assets should allow installation");
   assert.equal(success.skipWaitingCalls, 1, "worker should activate only after precache succeeds");
   assert.equal(success.stored.length, 9, "all nine required app-shell assets should be cached");
+  assert.equal(success.deletedCaches.length, 0, "successful install should keep its completed cache");
 
   const failure = await runInstall("timeline.html");
   assert.ok(failure.error instanceof Error || failure.error?.message?.includes("Required offline asset"), "a failed required asset should reject installation");
   assert.equal(failure.skipWaitingCalls, 0, "worker must not skip waiting when an app-shell asset fails");
+  assert.deepEqual(failure.deletedCaches, ["history-strategy-shell-v10"], "failed install should remove its partial cache without touching the previous version");
 });
