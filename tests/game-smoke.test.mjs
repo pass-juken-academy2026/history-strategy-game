@@ -244,7 +244,7 @@ test("god-view mode uses real-time 3D and preserves the two distinct mode rules"
   assert.ok(timeline.includes("オンライン対戦・フレンド招待・サーバー同期は未実装です"), "prototype must disclose missing online services");
   assert.ok(timeline.includes('id="networkNotice"') && timeline.includes("navigator.onLine") && timeline.includes("オフラインです。3Dライブラリは同梱されています"), "3D timeline must explain how to recover when offline");
   assert.ok(timeline.includes('e.target.type==="module"') && timeline.includes("3Dライブラリを読み込めませんでした"), "3D module load failures must be explained");
-  assert.ok(timeline.includes("カエサル") && timeline.includes("紫式部") && timeline.includes("ナポレオン"), "historical figures/events should be represented");
+  assert.ok(["始皇帝", "漢の武帝", "唐の太宗", "鄭和", "清王朝"].every((figure) => timeline.includes(figure)), "the dynasty timeline should represent figures/events from each stage");
   assert.ok(!/innerHTML\\s*=/.test(timeline), "dynamic labels should not use innerHTML");
   assert.ok(timeline.includes('id="saveButton"') && timeline.includes('id="loadButton"'), "manual save/load controls are required");
   assert.ok(timeline.includes("slotKey(slot)") && timeline.includes("slot>5"), "five local save slots are required");
