@@ -74,3 +74,15 @@ test("service worker precaches local Three.js dependencies", () => {
   assert.ok(serviceWorker.includes('"./vendor/addons/controls/OrbitControls.js"'), "OrbitControls should be in app shell cache");
   assert.ok(serviceWorker.includes("history-strategy-shell-v9"), "vendor cache update should invalidate old shell");
 });
+
+
+test("both build scripts verify bundled 3D assets in CI", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const workflow = await readFile(new URL("../.github/workflows/ci-pages.yml", import.meta.url), "utf8");
+  for (const path of ["dist/timeline.html", "dist/vendor/three.module.js", "dist/vendor/addons/controls/OrbitControls.js", "dist/vendor/THREE-LICENSE.txt"]) {
+    assert.ok(workflow.includes(path), "CI should verify web asset " + path);
+  }
+  for (const path of ["www/timeline.html", "www/vendor/three.module.js", "www/vendor/addons/controls/OrbitControls.js", "www/vendor/THREE-LICENSE.txt"]) {
+    assert.ok(workflow.includes(path), "CI should verify Android asset " + path);
+  }
+});
