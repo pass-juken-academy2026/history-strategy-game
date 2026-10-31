@@ -1,4 +1,4 @@
-const CACHE_NAME = "history-strategy-shell-v7";
+const CACHE_NAME = "history-strategy-shell-v8";
 const APP_SHELL = ["./", "./index.html", "./manifest.json", "./icon.svg", "./version.json", "./timeline.html"];
 
 function isCacheableStaticAsset(url) {
