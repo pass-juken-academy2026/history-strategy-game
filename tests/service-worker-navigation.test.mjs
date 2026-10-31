@@ -44,3 +44,11 @@ test("offline navigation retries the cached URL without query parameters", () =>
     "missing cached pages should return a clear explanation instead of an unrelated page"
   );
 });
+
+test("website and Android build scripts package the 3D timeline page", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const siteBuilder = await readFile(new URL("../scripts/prepare-site.mjs", import.meta.url), "utf8");
+  const androidBuilder = await readFile(new URL("../scripts/prepare-android.mjs", import.meta.url), "utf8");
+  assert.ok(siteBuilder.includes('"timeline.html"'), "website bundle should include timeline.html");
+  assert.ok(androidBuilder.includes('"timeline.html"'), "Android bundle should include timeline.html");
+});
