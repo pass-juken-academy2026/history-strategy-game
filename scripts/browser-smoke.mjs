@@ -36,6 +36,13 @@ try {
   });
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
   const pageErrors = [];
+  const networkOrigins = new Set();
+  page.on("request", (request) => {
+    try {
+      const url = new URL(request.url());
+      if (url.protocol === "http:" || url.protocol === "https:") networkOrigins.add(url.origin);
+    } catch {}
+  });
   page.on("pageerror", (error) => pageErrors.push(error.message));
   page.on("dialog", async (dialog) => {
     if (dialog.type() === "prompt") await dialog.accept("1");
@@ -169,6 +176,7 @@ try {
   assert.ok(mobileLayout.labelTop >= mobileLayout.modeBottom, "event label must not overlap the mode switch on a mobile viewport");
   assert.ok(mobileLayout.documentWidth <= mobileLayout.viewportWidth + 1, "mobile layout should not create horizontal page overflow");
   assert.deepEqual(pageErrors, [], "browser page should not emit uncaught JavaScript errors");
+  assert.deepEqual([...networkOrigins], ["http://127.0.0.1:4173"], "game page must not make HTTP(S) requests to third-party origins");
   console.log("Browser smoke passed: 3D renderer, faction controls, block placement, save/load, graphics restoration, block resizing and drag movement, victory-condition boundaries, mobile overlap/overflow, and end-of-timeline scoring.");
 } finally {
   if (browser) await browser.close();
