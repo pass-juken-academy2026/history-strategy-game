@@ -43,11 +43,12 @@ test("save storage stays browser-local and version polling stays same-origin", a
 });
 
 test("public privacy page is linked and included in the deployed bundle", async () => {
-  const [index, timeline, privacy, builder, worker] = await Promise.all([
+  const [index, timeline, privacy, builder, androidBuilder, worker] = await Promise.all([
     read("index.html"),
     read("timeline.html"),
     read("privacy.html"),
     read("scripts/prepare-site.mjs"),
+    read("scripts/prepare-android.mjs"),
     read("sw.js"),
   ]);
   assert.match(index, /href=["']\.\/privacy\.html["']/);
