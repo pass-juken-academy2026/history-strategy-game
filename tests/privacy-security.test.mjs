@@ -18,6 +18,9 @@ test("privacy baseline: no high-risk personal-data browser APIs or external reso
     [/navigator\s*\.\s*sendBeacon/, "beacon transmission"],
     [/document\s*\.\s*cookie/, "cookie access"],
     [/new\s+WebSocket\s*\(/, "direct online sync"],
+    [/\bXMLHttpRequest\b/, "XHR network requests"],
+    [/\bEventSource\s*\(/, "server-sent events"],
+    [/\bimportScripts\s*\(/, "worker script loading"],
   ];
 
   for (const [sourceName, source] of [["index.html", index], ["timeline.html", timeline], ["sw.js", worker]]) {
@@ -26,7 +29,6 @@ test("privacy baseline: no high-risk personal-data browser APIs or external reso
     }
   }
 
-  // This deliberately checks the scheme only; the full URL is not needed for the guard.
   const externalResourceTag = /<(?:script|iframe|img|audio|video|source|link)\b[^>]*(?:src|href)=["']https:/i;
   for (const [sourceName, source] of [["index.html", index], ["timeline.html", timeline]]) {
     assert.doesNotMatch(source, externalResourceTag, sourceName + " must not add remote embedded resources");
@@ -50,6 +52,9 @@ test("public privacy page is linked and included in the deployed bundle", async 
   ]);
   assert.match(index, /href=["']\.\/privacy\.html["']/);
   assert.match(timeline, /href=["']\.\/privacy\.html["']/);
+  assert.match(privacy, /GitHub Pages/);
+  assert.match(privacy, /IP\s*アドレス/);
+  assert.match(privacy, /docs\.github\.com\/en\/site-policy\/privacy-policies\/github-general-privacy-statement/);
   assert.match(privacy, /ホスティング事業者/);
   assert.match(privacy, /端末内ストレージ/);
   assert.match(builder, /"privacy\.html"/);
