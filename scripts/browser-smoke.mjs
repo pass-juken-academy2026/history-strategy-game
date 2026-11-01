@@ -196,7 +196,7 @@ try {
   await privacyPage.waitForLoadState("networkidle");
   assert.match(await privacyPage.locator("body").innerText(), /プライバシーについて/);
   assert.match(await privacyPage.locator("body").innerText(), /GitHub Pages/);
-  assert.match(await privacyPage.locator("body").innerText(), /IP\\s*アドレス/);
+  assert.match(await privacyPage.locator("body").innerText(), /IP\s*アドレス/);
   assert.deepEqual([...privacyOrigins], ["http://127.0.0.1:4173"], "main menu and privacy page must not make HTTP(S) requests to third-party origins");
   assert.deepEqual(unexpectedMethods, [], "main menu and privacy page must not send non-read HTTP requests");
   await privacyPage.close();
