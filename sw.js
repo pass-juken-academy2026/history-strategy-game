@@ -1,5 +1,5 @@
-const CACHE_NAME = "history-strategy-shell-v10";
-const APP_SHELL = ["./", "./index.html", "./manifest.json", "./icon.svg", "./version.json", "./timeline.html", "./vendor/three.module.js", "./vendor/addons/controls/OrbitControls.js", "./vendor/THREE-LICENSE.txt"];
+const CACHE_NAME = "history-strategy-shell-v11";
+const APP_SHELL = ["./", "./index.html", "./manifest.json", "./icon.svg", "./version.json", "./timeline.html", "./privacy.html", "./vendor/three.module.js", "./vendor/addons/controls/OrbitControls.js", "./vendor/THREE-LICENSE.txt"];
 
 function isCacheableStaticAsset(url) {
   return /\.(?:js|mjs|css|svg|png|webp|ico|woff2?)$/i.test(url.pathname)
