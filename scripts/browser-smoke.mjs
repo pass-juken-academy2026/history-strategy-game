@@ -177,7 +177,31 @@ try {
   assert.ok(mobileLayout.documentWidth <= mobileLayout.viewportWidth + 1, "mobile layout should not create horizontal page overflow");
   assert.deepEqual(pageErrors, [], "browser page should not emit uncaught JavaScript errors");
   assert.deepEqual([...networkOrigins], ["http://127.0.0.1:4173"], "game page must not make HTTP(S) requests to third-party origins");
-  console.log("Browser smoke passed: 3D renderer, faction controls, block placement, save/load, graphics restoration, block resizing and drag movement, victory-condition boundaries, mobile overlap/overflow, and end-of-timeline scoring.");
+
+  // Audit the main menu and public privacy notice in a real browser as well.
+  const privacyPage = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  const privacyOrigins = new Set();
+  const unexpectedMethods = [];
+  privacyPage.on("request", (request) => {
+    try {
+      const url = new URL(request.url());
+      if (url.protocol === "http:" || url.protocol === "https:") privacyOrigins.add(url.origin);
+      if (!["GET", "HEAD"].includes(request.method())) unexpectedMethods.push(request.method() + " " + url.pathname);
+    } catch {}
+  });
+  await privacyPage.goto("http://127.0.0.1:4173/index.html", { waitUntil: "networkidle" });
+  const privacyLink = privacyPage.locator('a[href="./privacy.html"]');
+  assert.ok(await privacyLink.count() > 0, "main menu must expose the privacy notice");
+  await privacyLink.first().click();
+  await privacyPage.waitForLoadState("networkidle");
+  assert.match(await privacyPage.locator("body").innerText(), /プライバシーについて/);
+  assert.match(await privacyPage.locator("body").innerText(), /GitHub Pages/);
+  assert.match(await privacyPage.locator("body").innerText(), /IP\\s*アドレス/);
+  assert.deepEqual([...privacyOrigins], ["http://127.0.0.1:4173"], "main menu and privacy page must not make HTTP(S) requests to third-party origins");
+  assert.deepEqual(unexpectedMethods, [], "main menu and privacy page must not send non-read HTTP requests");
+  await privacyPage.close();
+
+  console.log("Browser smoke passed: 3D gameplay, local saves, mobile layout, no third-party HTTP(S) requests on the game or main menu/privacy page, and privacy disclosure navigation.");
 } finally {
   if (browser) await browser.close();
   await new Promise((resolveClose) => server.close(resolveClose));
