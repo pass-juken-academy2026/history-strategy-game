@@ -43,11 +43,12 @@ test("save storage stays browser-local and version polling stays same-origin", a
 });
 
 test("public privacy page is linked and included in the deployed bundle", async () => {
-  const [index, timeline, privacy, builder, worker] = await Promise.all([
+  const [index, timeline, privacy, builder, androidBuilder, worker] = await Promise.all([
     read("index.html"),
     read("timeline.html"),
     read("privacy.html"),
     read("scripts/prepare-site.mjs"),
+    read("scripts/prepare-android.mjs"),
     read("sw.js"),
   ]);
   assert.match(index, /href=["']\.\/privacy\.html["']/);
@@ -58,5 +59,6 @@ test("public privacy page is linked and included in the deployed bundle", async 
   assert.match(privacy, /ホスティング事業者/);
   assert.match(privacy, /端末内ストレージ/);
   assert.match(builder, /"privacy\.html"/);
+  assert.ok(androidBuilder.includes('"privacy.html"'), "Android package must include the linked privacy page");
   assert.match(worker, /"\.\/privacy\.html"/);
 });
