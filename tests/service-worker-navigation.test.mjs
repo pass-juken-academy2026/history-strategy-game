@@ -72,7 +72,7 @@ test("3D timeline uses local Three.js imports and build scripts bundle dependenc
 test("service worker precaches local Three.js dependencies", () => {
   assert.ok(serviceWorker.includes('"./vendor/three.module.js"'), "Three.js should be in app shell cache");
   assert.ok(serviceWorker.includes('"./vendor/addons/controls/OrbitControls.js"'), "OrbitControls should be in app shell cache");
-  assert.ok(serviceWorker.includes("history-strategy-shell-v10"), "vendor cache update should invalidate old shell");
+  assert.ok(serviceWorker.includes("history-strategy-shell-v11"), "vendor cache update should invalidate old shell");
 });
 
 
@@ -96,7 +96,7 @@ test("service worker does not activate with an incomplete offline app shell", ()
 });
 
 test("service worker cache version changes when the required app shell changes", () => {
-  assert.ok(serviceWorker.includes('const CACHE_NAME = "history-strategy-shell-v10"'));
+  assert.ok(serviceWorker.includes('const CACHE_NAME = "history-strategy-shell-v11"'));
   assert.ok(serviceWorker.includes('"./vendor/three.module.js"'));
   assert.ok(serviceWorker.includes('"./vendor/addons/controls/OrbitControls.js"'));
 });
@@ -140,11 +140,11 @@ test("service worker install only activates after every required asset is cached
   const success = await runInstall();
   assert.equal(success.error, null, "all successful assets should allow installation");
   assert.equal(success.skipWaitingCalls, 1, "worker should activate only after precache succeeds");
-  assert.equal(success.stored.length, 9, "all nine required app-shell assets should be cached");
+  assert.equal(success.stored.length, 10, "all ten required app-shell assets should be cached");
   assert.equal(success.deletedCaches.length, 0, "successful install should keep its completed cache");
 
   const failure = await runInstall("timeline.html");
   assert.ok(failure.error instanceof Error || failure.error?.message?.includes("Required offline asset"), "a failed required asset should reject installation");
   assert.equal(failure.skipWaitingCalls, 0, "worker must not skip waiting when an app-shell asset fails");
-  assert.deepEqual(failure.deletedCaches, ["history-strategy-shell-v10"], "failed install should remove its partial cache without touching the previous version");
+  assert.deepEqual(failure.deletedCaches, ["history-strategy-shell-v11"], "failed install should remove its partial cache without touching the previous version");
 });
