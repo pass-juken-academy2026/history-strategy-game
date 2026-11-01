@@ -50,6 +50,9 @@ test("public privacy page is linked and included in the deployed bundle", async 
   ]);
   assert.match(index, /href=["']\.\/privacy\.html["']/);
   assert.match(timeline, /href=["']\.\/privacy\.html["']/);
+  assert.match(privacy, /GitHub Pages/);
+  assert.match(privacy, /IP\\s*アドレス/);
+  assert.match(privacy, /docs\\.github\\.com\\/en\\/site-policy\\/privacy-policies\\/github-general-privacy-statement/);
   assert.match(privacy, /ホスティング事業者/);
   assert.match(privacy, /端末内ストレージ/);
   assert.match(builder, /"privacy\.html"/);
