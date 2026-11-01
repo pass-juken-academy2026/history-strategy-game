@@ -39,3 +39,19 @@ test("save storage stays browser-local and version polling stays same-origin", a
   assert.ok(index.includes("fetch('./version.json"), "version check must use a relative same-origin path");
   assert.ok(!index.includes("fetch('https:") && !index.includes('fetch("https:'), "do not send game data to a hard-coded external endpoint");
 });
+
+test("public privacy page is linked and included in the deployed bundle", async () => {
+  const [index, timeline, privacy, builder, worker] = await Promise.all([
+    read("index.html"),
+    read("timeline.html"),
+    read("privacy.html"),
+    read("scripts/prepare-site.mjs"),
+    read("sw.js"),
+  ]);
+  assert.match(index, /href=["']\.\/privacy\.html["']/);
+  assert.match(timeline, /href=["']\.\/privacy\.html["']/);
+  assert.match(privacy, /ホスティング事業者/);
+  assert.match(privacy, /端末内ストレージ/);
+  assert.match(builder, /"privacy\.html"/);
+  assert.match(worker, /"\.\/privacy\.html"/);
+});
