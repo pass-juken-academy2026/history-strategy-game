@@ -59,5 +59,6 @@ test("public privacy page is linked and included in the deployed bundle", async 
   assert.match(privacy, /ホスティング事業者/);
   assert.match(privacy, /端末内ストレージ/);
   assert.match(builder, /"privacy\.html"/);
+  assert.match(androidBuilder, /privacy\\.html/, "Android package must include the linked privacy page");
   assert.match(worker, /"\.\/privacy\.html"/);
 });
