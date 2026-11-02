@@ -40,6 +40,8 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Run real Chromium gameplay smoke test
         run: node scripts/browser-smoke.mjs
+      - name: Simulate CPU matches across difficulty levels
+        run: node scripts/cpu-balance-sim.mjs
       - name: Validate bundled 3D JavaScript modules
         run: |
           node --input-type=module -e 'const THREE = await import("./dist/vendor/three.module.js"); if (!THREE.Scene || !THREE.WebGLRenderer) throw new Error("Three.js exports missing"); console.log("Three.js module imports successfully.")'
