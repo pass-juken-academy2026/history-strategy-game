@@ -118,3 +118,10 @@ test("manual save slots remain independent from continuous autosave", () => {
 test("loading an empty save slot does not reset the current game", () => {
   assert.match(html, /if\(!localStorage\.getItem\(slotKey\(slot\)\)\)\{toast\('このスロットに保存データがありません'\);return\}/);
 });
+
+test("iPhone can scroll the 3D timeline page without losing vertical canvas gestures", () => {
+  assert.match(html, /html,body\{height:auto;min-height:100%;overflow-x:hidden;overflow-y:auto\}/,
+    "mobile page must allow vertical scrolling");
+  assert.match(html, /#world3d canvas\{touch-action:pan-y!important\}/,
+    "canvas must override OrbitControls touch-action so vertical swipes can scroll");
+});
