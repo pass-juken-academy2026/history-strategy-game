@@ -6,6 +6,8 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 1' # Every Monday at 12:00 JST; validation only, no deploy
 
 permissions:
   contents: read
@@ -59,7 +61,7 @@ jobs:
           node --check www/vendor/addons/controls/OrbitControls.js
 
   deploy:
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && github.event_name != 'schedule' && github.ref == 'refs/heads/main'
     needs: test
     runs-on: ubuntu-latest
     permissions:
