@@ -171,10 +171,14 @@ try {
   const mobileLayout = await page.evaluate(() => {
     const mode = document.querySelector(".mode-switch").getBoundingClientRect();
     const label = document.querySelector(".center-label").getBoundingClientRect();
-    return { modeBottom: mode.bottom, labelTop: label.top, labelBottom: label.bottom, viewportWidth: innerWidth, documentWidth: document.documentElement.scrollWidth };
+    return { modeBottom: mode.bottom, labelTop: label.top, labelBottom: label.bottom, viewportWidth: innerWidth, documentWidth: document.documentElement.scrollWidth, bodyOverflowY: getComputedStyle(document.body).overflowY, canvasTouchAction: getComputedStyle(document.querySelector("#world3d canvas")).touchAction, hudPosition: getComputedStyle(document.querySelector(".hud")).position, hudHeight: document.querySelector(".hud").getBoundingClientRect().height, pageHeight: document.documentElement.scrollHeight };
   });
   assert.ok(mobileLayout.labelTop >= mobileLayout.modeBottom, "event label must not overlap the mode switch on a mobile viewport");
   assert.ok(mobileLayout.documentWidth <= mobileLayout.viewportWidth + 1, "mobile layout should not create horizontal page overflow");
+  assert.equal(mobileLayout.bodyOverflowY, "auto", "mobile page should allow vertical scrolling");
+  assert.equal(mobileLayout.canvasTouchAction, "pan-y", "3D canvas should allow vertical touch scrolling");
+  assert.equal(mobileLayout.hudPosition, "relative", "mobile interface should flow vertically instead of trapping content in a fixed overlay");
+  assert.ok(mobileLayout.pageHeight >= mobileLayout.hudHeight, "mobile page height should include the full interface");
   assert.deepEqual(pageErrors, [], "browser page should not emit uncaught JavaScript errors");
   assert.deepEqual([...networkOrigins], ["http://127.0.0.1:4173"], "game page must not make HTTP(S) requests to third-party origins");
 
