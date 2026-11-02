@@ -51,7 +51,7 @@ try {
 
   for (const difficulty of difficulties) {
     for (const side of sides) {
-      for (let repetition = 0; repetition < 3; repetition++) {
+      for (let repetition = 0; repetition < 10; repetition++) {
         if (!firstMatch) {
           await page.locator("#newGame").click();
           await page.locator("#startScreen").waitFor({ state: "visible" });
@@ -142,7 +142,7 @@ try {
   }
 
   assert.deepEqual(pageErrors, [], "CPU simulation should not emit uncaught browser errors");
-  console.log("CPU simulation smoke results (3 seeded games per difficulty and player side; exploratory, not a statistically robust balance rating):");
+  console.log("CPU simulation smoke results (10 seeded games per difficulty and player side; exploratory, not a statistically robust balance rating):");
   console.log(JSON.stringify(outcomes));
 } finally {
   if (browser) await browser.close();
