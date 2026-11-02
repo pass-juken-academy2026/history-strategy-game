@@ -226,6 +226,11 @@ test("legacy six-region saves migrate and corrupted primary saves recover from b
   assert.equal(sandbox.g.regions[0].troops, 5);
   assert.equal(sandbox.g.regions[0].dev, 2);
 
+  const masterSave = JSON.parse(serialized);
+  masterSave.g.difficulty = "master";
+  assert.equal(sandbox.__loadSavedGameData(JSON.stringify(masterSave)), true, "saved games using master CPU difficulty must restore");
+  assert.equal(sandbox.g.difficulty, "master");
+
   stored["history-strategy-save-v1"] = "{broken json";
   stored["history-strategy-save-backup-v1"] = serialized;
   assert.equal(sandbox.__loadSavedGame(), true);
