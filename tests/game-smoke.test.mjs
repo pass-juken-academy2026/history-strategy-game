@@ -100,7 +100,8 @@ test("development is capped and attack is a declared action control", () => {
 
 test("CPU difficulty only changes CPU attack strength and menus support Escape", () => {
   assert.ok(html.includes("const cpuActing=g.mode==='cpu'&&g.active!==g.playerSide"));
-  assert.ok(html.includes("g.difficulty==='easy'?-1:g.difficulty==='hard'?2:0"));
+  assert.ok(html.includes("g.difficulty==='easy'?-1:g.difficulty==='master'?3:g.difficulty==='hard'?2:0"));
+  assert.ok(html.includes("g.difficulty==='master'?3"), "master CPU should receive a stronger attack power bonus than hard CPU");
   assert.ok(html.includes("if(e.key==='Escape')closeSocialMenus()"));
   assert.ok(html.includes("if(!e.target.closest('.start-topbar'))closeSocialMenus()"));
 });
