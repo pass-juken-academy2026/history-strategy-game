@@ -267,3 +267,13 @@ test("CPU strategy adapts its protection, disruption, attack, and recruitment pr
   assert.match(cpuTurn[0], /const targets=g\.regions\.filter/);
   assert.match(cpuTurn[0], /\.sort\(\(a,b\)=>\(a\.troops\+a\.dev\)/);
 });
+
+test("master CPU difficulty is available and uses stronger strategic thresholds", () => {
+  assert.match(html, /<option value="master">達人<\/option>/);
+  const cpuTurn = html.match(/function cpuTurn\(\)\{[\s\S]*?function doAttackOrDevelop/);
+  assert.ok(cpuTurn, "CPU turn function should exist");
+  assert.match(cpuTurn[0], /difficulty==='master'\?\.9/);
+  assert.match(cpuTurn[0], /difficulty==='master'\?96/);
+  assert.match(cpuTurn[0], /difficulty==='master'\?8/);
+  assert.match(cpuTurn[0], /difficulty==='master'\?15/);
+});
