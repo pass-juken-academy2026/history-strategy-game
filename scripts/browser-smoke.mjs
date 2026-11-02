@@ -205,7 +205,33 @@ try {
   assert.deepEqual(unexpectedMethods, [], "main menu and privacy page must not send non-read HTTP requests");
   await privacyPage.close();
 
-  console.log("Browser smoke passed: 3D gameplay, local saves, mobile layout, no third-party HTTP(S) requests on the game or main menu/privacy page, and privacy disclosure navigation.");
+  // Exercise actual CPU turns for every difficulty and both player sides.
+  for (const side of ["disrupt", "restore"]) {
+    for (const difficulty of ["easy", "normal", "hard", "master"]) {
+      const cpuPage = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+      const cpuErrors = [];
+      cpuPage.on("pageerror", (error) => cpuErrors.push(error.message));
+      cpuPage.on("dialog", async (dialog) => { await dialog.accept(); });
+      await cpuPage.goto("http://127.0.0.1:4173/index.html", { waitUntil: "networkidle" });
+      await cpuPage.evaluate(({ side, difficulty }) => {
+        document.querySelector("#side").value = side;
+        document.querySelector("#difficulty").value = difficulty;
+        document.querySelector("#mode").value = "cpu";
+      }, { side, difficulty });
+      await cpuPage.locator("#beginCampaign").click();
+      const initialLogCount = await cpuPage.locator("#log .logitem").count();
+      if (side === "disrupt") await cpuPage.locator("#endTurn").click();
+      await cpuPage.waitForFunction(
+        (initial) => document.querySelectorAll("#log .logitem").length > initial,
+        initialLogCount,
+        { timeout: 5000 }
+      );
+      assert.deepEqual(cpuErrors, [], `CPU ${difficulty} versus player ${side} should not emit uncaught errors`);
+      await cpuPage.close();
+    }
+  }
+
+  console.log("Browser smoke passed: 3D gameplay, CPU turns for all four difficulties and both sides, local saves, mobile layout, no third-party HTTP(S) requests, and privacy disclosure navigation.");
 } finally {
   if (browser) await browser.close();
   await new Promise((resolveClose) => server.close(resolveClose));
