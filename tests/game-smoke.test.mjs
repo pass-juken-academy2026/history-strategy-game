@@ -272,7 +272,7 @@ test("master CPU difficulty is available and uses stronger strategic thresholds"
   assert.match(html, /<option value="master">達人<\/option>/);
   const cpuTurn = html.match(/function cpuTurn\(\)\{[\s\S]*?function doAttackOrDevelop/);
   assert.ok(cpuTurn, "CPU turn function should exist");
-  assert.match(cpuTurn[0], /difficulty==='master'\?\.9/);
+  assert.ok(cpuTurn[0].includes("difficulty==='hard'?.75:.9"));
   assert.match(cpuTurn[0], /difficulty==='master'\?96/);
   assert.match(cpuTurn[0], /difficulty==='master'\?8/);
   assert.match(cpuTurn[0], /difficulty==='master'\?15/);
