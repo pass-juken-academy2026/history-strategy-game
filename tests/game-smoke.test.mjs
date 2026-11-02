@@ -156,6 +156,44 @@ test("territory victory requires a majority of all regions, not a fixed small co
   assert.ok(html.includes("ownedCount('restore')>=territoryTarget"));
 });
 
+test("all standard victory conditions produce the expected winner", () => {
+  const start = html.indexOf("function checkEnd(){");
+  const end = html.indexOf("\nfunction finish(", start);
+  assert.ok(start >= 0 && end > start, "checkEnd function should exist");
+  const source = html.slice(start, end);
+  const makeState = (overrides = {}) => ({
+    stability: 70,
+    score: {disrupt: 0, restore: 0},
+    goal: "standard",
+    turn: 1,
+    regions: Array.from({length: 27}, (_, id) => ({id, owner: id < 9 ? "disrupt" : id < 18 ? "restore" : "neutral"})),
+    ...overrides
+  });
+  const checkWinner = (state) => {
+    let winner = null;
+    const sandbox = {
+      g: state,
+      ownedCount(side) { return state.regions.filter(r => r.owner === side).length; },
+      finish(side) { winner = side; }
+    };
+    vm.runInNewContext(source, sandbox);
+    sandbox.checkEnd();
+    return winner;
+  };
+
+  assert.equal(checkWinner(makeState({stability: 0})), "disrupt", "zero stability should end the game for the disruption faction");
+  assert.equal(checkWinner(makeState({stability: 100, score: {disrupt: 0, restore: 12}})), "restore", "full stability and sufficient restoration score should win for the historical faction");
+  assert.equal(checkWinner(makeState({turn: 12, score: {disrupt: 8, restore: 3}})), "disrupt", "higher disruption score should win at the turn limit");
+  assert.equal(checkWinner(makeState({turn: 12, score: {disrupt: 3, restore: 8}})), "restore", "higher restoration score should win at the turn limit");
+
+  const tieByTerritory = makeState({
+    turn: 12,
+    score: {disrupt: 5, restore: 5},
+    regions: Array.from({length: 27}, (_, id) => ({id, owner: id < 14 ? "restore" : id < 20 ? "disrupt" : "neutral"}))
+  });
+  assert.equal(checkWinner(tieByTerritory), "restore", "a score tie at the turn limit should be broken by territory control");
+});
+
 test("territory victory logic waits for a true majority of the 27-region map", () => {
   const start = html.indexOf("function checkEnd(){");
   const end = html.indexOf("\nfunction finish(", start);
