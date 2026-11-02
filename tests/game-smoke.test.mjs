@@ -264,5 +264,6 @@ test("CPU strategy adapts its protection, disruption, attack, and recruitment pr
   assert.match(cpuTurn[0], /const shouldProtect=enemySide==='restore'/);
   assert.match(cpuTurn[0], /const shouldDisrupt=enemySide==='disrupt'/);
   assert.match(cpuTurn[0], /difficulty==='hard'\?12:10/);
-  assert.match(cpuTurn[0], /const targets=g\.regions\.filter/);\n  assert.match(cpuTurn[0], /\.sort\(\(a,b\)=>\(a\.troops\+a\.dev\)/);
+  assert.match(cpuTurn[0], /const targets=g\.regions\.filter/);
+  assert.match(cpuTurn[0], /\.sort\(\(a,b\)=>\(a\.troops\+a\.dev\)/);
 });
