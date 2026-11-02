@@ -67,56 +67,71 @@ try {
 
         let cycles = 0;
         while (cycles < 30) {
-          const state = await page.evaluate(() => {
-            const current = eval("g");
-            return { gameOver: eval("gameOver"), active: current.active, playerSide: current.playerSide, turn: current.turn, stability: current.stability };
-          });
+          const playerName = side === "disrupt" ? "妨害派" : "史実派";
+          const state = await page.evaluate(() => ({
+            gameOver: document.querySelector("#status").textContent.includes("勝利！"),
+            active: document.querySelector("#activeSide").textContent.trim(),
+            turn: document.querySelector("#turnStat").textContent,
+            stability: document.querySelector("#stabilityStat").textContent
+          }));
           if (state.gameOver) break;
 
-          if (state.active !== state.playerSide) {
-            await page.waitForFunction(() => eval("gameOver") || eval("g.active") === eval("g.playerSide"), null, { timeout: 3000 });
+          if (!state.active.includes(playerName)) {
+            await page.waitForFunction((expected) =>
+              document.querySelector("#status").textContent.includes("勝利！")
+              || document.querySelector("#activeSide").textContent.includes(expected),
+              playerName,
+              { timeout: 3000 }
+            );
             cycles++;
             continue;
           }
 
           await page.evaluate(() => {
-            const current = eval("g");
-            const side = current.active;
-            const player = current.players[side];
-            const enemies = current.regions.filter((region) => region.owner !== side);
+            const activeText = document.querySelector("#activeSide").textContent;
+            const side = activeText.includes("妨害派") ? "disrupt" : "restore";
+            const gold = Number(document.querySelector("#gold").textContent);
+            const food = Number(document.querySelector("#food").textContent);
+            const troops = Number(document.querySelector("#troops").textContent);
+            const enemies = [...document.querySelectorAll("#map button.region.enemy")];
             const actions = [side === "disrupt" ? "mission" : "protect"];
-            if (player.gold >= 3) actions.push("develop");
-            if (player.gold >= 2 && player.food >= 2) actions.push("recruit");
-            if (player.gold >= 2) actions.push("diplomacy");
-            if (player.troops >= 4 && enemies.length) actions.push("attack");
+            if (gold >= 3) actions.push("develop");
+            if (gold >= 2 && food >= 2) actions.push("recruit");
+            if (gold >= 2) actions.push("diplomacy");
+            if (troops >= 4 && enemies.length) actions.push("attack");
             const action = actions[Math.floor(Math.random() * actions.length)];
-            if (action === "attack") {
-              const target = enemies[Math.floor(Math.random() * enemies.length)];
-              eval("selected = " + target.id);
+            if (action === "attack" && enemies.length) {
+              enemies[Math.floor(Math.random() * enemies.length)].click();
             } else if (action === "develop") {
-              const available = current.regions.filter((region) => region.owner === side || region.owner === "neutral");
-              if (available.length) {
-                const target = available[Math.floor(Math.random() * available.length)];
-                eval("selected = " + target.id);
-              }
+              const available = [...document.querySelectorAll("#map button.region:not(.enemy)")];
+              if (available.length) available[Math.floor(Math.random() * available.length)].click();
+            } else {
+              const regions = [...document.querySelectorAll("#map button.region")];
+              if (regions.length) regions[Math.floor(Math.random() * regions.length)].click();
             }
             document.querySelector("#" + action).click();
             document.querySelector("#endTurn").click();
           });
-          await page.waitForFunction(() => eval("gameOver") || eval("g.active") === eval("g.playerSide"), null, { timeout: 3000 });
+          await page.waitForFunction((expected) =>
+            document.querySelector("#status").textContent.includes("勝利！")
+            || document.querySelector("#activeSide").textContent.includes(expected),
+            playerName,
+            { timeout: 3000 }
+          );
           cycles++;
         }
 
         const result = await page.evaluate(() => ({
-          gameOver: eval("gameOver"),
           status: document.querySelector("#status").textContent,
-          stability: eval("g.stability"),
-          turn: eval("g.turn"),
-          scores: eval("g.score")
+          stability: Number.parseInt(document.querySelector("#stabilityStat").textContent, 10),
+          turn: document.querySelector("#turnStat").textContent,
+          disruptScore: Number(document.querySelector("#disruptScore").textContent),
+          restoreScore: Number(document.querySelector("#restoreScore").textContent)
         }));
-        assert.ok(result.gameOver, `CPU ${difficulty}, player side ${side}, match ${repetition + 1} should finish within 30 turn cycles; status=${result.status}`);
+        const gameOver = result.status.includes("勝利！");
+        assert.ok(gameOver, `CPU ${difficulty}, player side ${side}, match ${repetition + 1} should finish within 30 turn cycles; status=${result.status}`);
         assert.ok(Number.isFinite(result.stability) && result.stability >= 0 && result.stability <= 100, "stability should remain within bounds");
-        assert.ok(Number.isFinite(result.scores.disrupt) && Number.isFinite(result.scores.restore), "scores should remain finite");
+        assert.ok(Number.isFinite(result.disruptScore) && Number.isFinite(result.restoreScore), "scores should remain finite");
         const winner = result.status.includes("妨害派の勝利") ? "disrupt" : result.status.includes("史実派の勝利") ? "restore" : null;
         assert.ok(winner, "finished game should announce a winner");
         outcomes[difficulty].games++;
