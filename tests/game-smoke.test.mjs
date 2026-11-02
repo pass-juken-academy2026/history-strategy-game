@@ -279,7 +279,10 @@ test("CPU strategy adapts its protection, disruption, attack, and recruitment pr
   assert.match(cpuTurn[0], /const shouldDisrupt=enemySide==='disrupt'/);
   assert.match(cpuTurn[0], /difficulty==='master'\?15:difficulty==='hard'\?12:10/);
   assert.match(cpuTurn[0], /const targets=g\.regions\.filter/);
-  assert.match(cpuTurn[0], /\.sort\(\(a,b\)=>\(a\.troops\+a\.dev\)/);
+  assert.match(cpuTurn[0], /const enemy=\[\.\.\.targets\]\.sort\(\(a,b\)=>\(a\.troops\+a\.dev\)/);
+  assert.match(cpuTurn[0], /const strategicTarget=\[\.\.\.targets\]\.sort/);
+  assert.match(cpuTurn[0], /if\(strategicTarget\)selected=strategicTarget\.id;protect\(\)/, "protection should target a high-impact region");
+  assert.match(cpuTurn[0], /if\(strategicTarget\)selected=strategicTarget\.id;mission\(\)/, "disruption should target a high-impact region");
 });
 
 test("master CPU difficulty is available and uses stronger strategic thresholds", () => {
