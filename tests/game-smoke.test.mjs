@@ -260,7 +260,7 @@ test("god-view mode uses real-time 3D and preserves the two distinct mode rules"
 test("CPU strategy adapts its protection, disruption, attack, and recruitment priorities by difficulty", () => {
   const cpuTurn = html.match(/function cpuTurn\(\)\{[\s\S]*?function doAttackOrDevelop/);
   assert.ok(cpuTurn, "CPU turn function should exist");
-  assert.match(cpuTurn[0], /const attackChance=difficulty==='easy'\?\.3:difficulty==='hard'\?\.75:\.55/);
+  assert.match(cpuTurn[0], /const attackChance=difficulty==='easy'\?\.3:difficulty==='normal'\?\.55:difficulty==='hard'\?\.75:\.9/);
   assert.match(cpuTurn[0], /const shouldProtect=enemySide==='restore'/);
   assert.match(cpuTurn[0], /const shouldDisrupt=enemySide==='disrupt'/);
   assert.match(cpuTurn[0], /difficulty==='hard'\?12:10/);
